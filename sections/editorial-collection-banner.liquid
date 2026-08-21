@@ -1,0 +1,539 @@
+{% liquid
+  assign collection = section.settings.collection
+  
+  # Resolve Title
+  assign display_title = section.settings.title
+  if display_title == blank and collection != blank
+    assign display_title = collection.title
+  endif
+  if display_title == blank
+    assign display_title = 'COLLECTION NAME'
+  endif
+
+  # Resolve Tagline
+  assign display_tagline = section.settings.tagline
+  if display_tagline == blank and collection != blank
+    assign display_tagline = collection.metafields.custom.tagline
+  endif
+  if display_tagline == blank and collection != blank
+    assign display_tagline = collection.description | strip_html | truncate: 80
+  endif
+
+  # Resolve Link
+  assign display_link = section.settings.link
+  if display_link == blank and collection != blank
+    assign display_link = collection.url
+  endif
+
+  # Hybrid Image 1 (Primary)
+  assign img_1 = section.settings.image_1
+  if img_1 == blank and collection != blank and collection.image != blank
+    assign img_1 = collection.image
+  elsif img_1 == blank and collection != blank and collection.products[0].featured_image != blank
+    assign img_1 = collection.products[0].featured_image
+  endif
+
+  # Hybrid Image 2 (Secondary)
+  assign img_2 = section.settings.image_2
+  if img_2 == blank and collection != blank and collection.metafields.custom.secondary_image != blank
+    assign img_2 = collection.metafields.custom.secondary_image
+  elsif img_2 == blank and collection != blank and collection.products[1].featured_image != blank
+    assign img_2 = collection.products[1].featured_image
+  endif
+
+  # Hybrid Image 3 (Accent)
+  assign img_3 = section.settings.image_3
+  if img_3 == blank and collection != blank and collection.metafields.custom.accent_image != blank
+    assign img_3 = collection.metafields.custom.accent_image
+  elsif img_3 == blank and collection != blank and collection.products[2].featured_image != blank
+    assign img_3 = collection.products[2].featured_image
+  endif
+
+  assign layout = section.settings.layout_style | default: 'style_1'
+%}
+
+<div
+  id="EditorialBanner-{{ section.id }}"
+  class="editorial-banner editorial-banner--{{ layout }}"
+  style="
+    --padding-top: {{ section.settings.padding_top }}px;
+    --padding-bottom: {{ section.settings.padding_bottom }}px;
+    {% if section.settings.background_color != blank %}background-color: {{ section.settings.background_color }};{% endif %}
+  "
+>
+  <div class="editorial-banner__container page-width">
+    {% if display_link != blank %}
+      <a href="{{ display_link }}" class="editorial-banner__link-overlay" aria-label="{{ display_title | escape }}"></a>
+    {% endif %}
+
+    {% if layout == 'style_3' %}
+      <!-- Layout Style 3 (e.g. IN SCRUTINY) Header -->
+      <div class="editorial-banner__top-header">
+        <h2 class="editorial-banner__title editorial-banner__title--top">
+          {{ display_title }}
+        </h2>
+      </div>
+    {% endif %}
+
+    <div class="editorial-banner__grid editorial-banner__grid--{{ layout }}">
+      <!-- Primary Left Image -->
+      <div class="editorial-banner__media-block editorial-banner__media-block--primary">
+        {% if img_1 != blank %}
+          {{ img_1 | image_url: width: 1400 | image_tag: loading: 'lazy', class: 'editorial-banner__image', alt: display_title }}
+        {% else %}
+          {{ 'collection-1' | placeholder_svg_tag: 'editorial-banner__placeholder' }}
+        {% endif %}
+      </div>
+
+      <!-- Center / Content Column -->
+      <div class="editorial-banner__content-block">
+        {% if layout != 'style_3' %}
+          {% liquid
+            assign is_scandalicious_split = false
+            if display_title contains '|'
+              assign is_scandalicious_split = true
+              assign title_parts = display_title | split: '|'
+              assign title_top = title_parts[0]
+              assign title_bottom = title_parts[1]
+            elsif display_title == 'SCANDALICIOUS' or display_title == 'Scandalicious' or display_title == 'scandalicious'
+              assign is_scandalicious_split = true
+              assign title_top = 'SCAND'
+              assign title_bottom = 'alicious'
+            endif
+          %}
+
+          {% if is_scandalicious_split %}
+            <div class="editorial-split-title">
+              <div class="editorial-split-title__top">{{ title_top }}</div>
+              <div class="editorial-split-title__bottom-row">
+                <span class="editorial-split-title__prefix">a</span>
+                <span class="editorial-split-title__tall-l">l</span>
+                <span class="editorial-split-title__suffix">icious</span>
+              </div>
+            </div>
+          {% else %}
+            <h2 class="editorial-banner__title editorial-banner__title--main">
+              {{ display_title }}
+            </h2>
+          {% endif %}
+        {% endif %}
+
+        <div class="editorial-banner__sub-container">
+          {% if section.settings.show_divider %}
+            <div class="editorial-banner__divider"></div>
+          {% endif %}
+          
+          {% if display_tagline != blank %}
+            <p class="editorial-banner__tagline">
+              {{ display_tagline }}
+            </p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Secondary & Accent Media Column -->
+      <div class="editorial-banner__media-block editorial-banner__media-block--secondary">
+        {% if img_2 != blank %}
+          <div class="editorial-banner__image-wrapper editorial-banner__image-wrapper--img2">
+            {{ img_2 | image_url: width: 800 | image_tag: loading: 'lazy', class: 'editorial-banner__image', alt: display_title }}
+          </div>
+        {% endif %}
+
+        {% if img_3 != blank and layout != 'style_1' %}
+          <div class="editorial-banner__image-wrapper editorial-banner__image-wrapper--img3">
+            {{ img_3 | image_url: width: 800 | image_tag: loading: 'lazy', class: 'editorial-banner__image', alt: display_title }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .editorial-banner {
+    position: relative;
+    padding-top: var(--padding-top, 60px);
+    padding-bottom: var(--padding-bottom, 60px);
+    overflow: hidden;
+  }
+
+  .editorial-banner__container {
+    position: relative;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .editorial-banner__link-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+  }
+
+  .editorial-banner__grid {
+    display: grid;
+    align-items: center;
+    gap: 30px;
+  }
+
+  /* Image styling & micro-animation */
+  .editorial-banner__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .editorial-banner__container:hover .editorial-banner__image {
+    transform: scale(1.02);
+  }
+
+  .editorial-banner__placeholder {
+    width: 100%;
+    height: 100%;
+    background: #f4f4f4;
+  }
+
+  /* Typography */
+  .editorial-banner__title {
+    font-family: var(--font-heading--family, 'Gilda Display', serif);
+    font-weight: 400;
+    line-height: 0.95;
+    margin: 0;
+    color: #121212;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+
+  .editorial-banner__tagline {
+    font-family: var(--font-body--family, sans-serif);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin: 0;
+    color: #2b2b2b;
+  }
+
+  .editorial-banner__divider {
+    width: 1px;
+    height: 50px;
+    background-color: #121212;
+    margin: 15px 0;
+  }
+
+  /* Split Title Typography (SCANDalicious style) */
+  .editorial-split-title {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-family: 'Agatho', var(--font-heading--family, 'Gilda Display', serif);
+    line-height: 1;
+    margin: 0 auto;
+    width: max-content;
+    position: relative;
+  }
+
+  .editorial-split-title__top {
+    display: block;
+    font-size: clamp(3.2rem, 7vw, 5.8rem);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #121212;
+    line-height: 0.9;
+  }
+
+  .editorial-split-title__bottom-row {
+    display: inline-flex;
+    align-items: baseline;
+    white-space: nowrap;
+    margin-top: -6em;
+    margin-left: 88%;
+  }
+
+  .editorial-split-title__prefix {
+    font-size: clamp(2.4rem, 5.2vw, 4.4rem);
+    text-transform: lowercase;
+    color: #121212;
+    line-height: 1;
+  }
+
+  .editorial-split-title__tall-l {
+    font-size: clamp(4.8rem, 11vw, 11.5rem);
+    font-weight: 200;
+    line-height: 0.5;
+    color: #121212;
+    transform: translateY(-0em);
+    margin: 0 1px;
+    display: inline-block;
+  }
+
+  .editorial-split-title__suffix {
+    font-size: clamp(2.4rem, 5.2vw, 4.4rem);
+    text-transform: lowercase;
+    color: #121212;
+    line-height: 1;
+  }
+
+  /* Layout 1: Scandalicious Style */
+  .editorial-banner__grid--style_1 {
+    grid-template-columns: 1fr 1.2fr 0.8fr;
+  }
+
+  .editorial-banner__grid--style_1 .editorial-banner__media-block--primary {
+    max-width: 420px;
+    aspect-ratio: 3/4;
+  }
+
+  .editorial-banner__grid--style_1 .editorial-banner__title--main {
+    font-size: clamp(3rem, 7vw, 6rem);
+    text-align: center;
+  }
+
+  .editorial-banner__grid--style_1 .editorial-banner__sub-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+  }
+
+  .editorial-banner__grid--style_1 .editorial-banner__image-wrapper--img2 {
+    max-width: 350px;
+    aspect-ratio: 1 / 2;
+    margin-left: auto;
+    position: relative;
+    top: 180px;
+    right: 48%;
+    overflow: hidden;
+  }
+
+  /* Layout 2: Ragebait Style */
+  .editorial-banner__grid--style_2 {
+    grid-template-columns: 1.1fr 1fr 0.9fr;
+  }
+
+  .editorial-banner__grid--style_2 .editorial-banner__media-block--primary {
+    max-width: 450px;
+    aspect-ratio: 4/5;
+  }
+
+  .editorial-banner__grid--style_2 .editorial-banner__title--main {
+    font-size: clamp(2.8rem, 6.5vw, 5.5rem);
+    text-align: center;
+    text-transform: lowercase;
+  }
+
+  .editorial-banner__grid--style_2 .editorial-banner__media-block--secondary {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .editorial-banner__grid--style_2 .editorial-banner__image-wrapper--img2 {
+    width: 80%;
+    margin-left: auto;
+    aspect-ratio: 1/1;
+  }
+
+  .editorial-banner__grid--style_2 .editorial-banner__image-wrapper--img3 {
+    width: 60%;
+    aspect-ratio: 3/4;
+  }
+
+  .editorial-banner__grid--style_2 .editorial-banner__sub-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 40px;
+  }
+
+  /* Layout 3: In Scrutiny Style */
+  .editorial-banner__top-header {
+    margin-bottom: 25px;
+    text-align: center;
+  }
+
+  .editorial-banner__grid--style_3 {
+    grid-template-columns: 1.2fr 0.8fr 1fr;
+  }
+
+  .editorial-banner__grid--style_3 .editorial-banner__title--top {
+    font-size: clamp(3rem, 8vw, 7rem);
+  }
+
+  .editorial-banner__grid--style_3 .editorial-banner__media-block--primary {
+    aspect-ratio: 1/1;
+  }
+
+  .editorial-banner__grid--style_3 .editorial-banner__image-wrapper--img2 {
+    aspect-ratio: 4/5;
+  }
+
+  .editorial-banner__grid--style_3 .editorial-banner__sub-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    margin-top: 60px;
+  }
+
+  .editorial-banner__grid--style_3 .editorial-banner__divider {
+    margin-left: auto;
+  }
+
+  /* Mobile Responsive Breakpoints */
+  @media screen and (max-width: 749px) {
+    .editorial-banner__grid {
+      grid-template-columns: 1fr !important;
+      gap: 20px;
+    }
+
+    .editorial-banner__title {
+      font-size: 2.8rem !important;
+      text-align: center !important;
+    }
+
+    .editorial-banner__media-block--primary,
+    .editorial-banner__image-wrapper--img2,
+    .editorial-banner__image-wrapper--img3 {
+      max-width: 100% !important;
+      width: 100% !important;
+      margin: 0 !important;
+    }
+
+    .editorial-banner__sub-container {
+      align-items: center !important;
+      text-align: center !important;
+    }
+
+    .editorial-banner__divider {
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Editorial Collection",
+  "tag": "section",
+  "class": "section-editorial-banner",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "select",
+      "id": "layout_style",
+      "label": "Layout style",
+      "options": [
+        {
+          "value": "style_1",
+          "label": "Style 1 (Scandalicious - Split Title)"
+        },
+        {
+          "value": "style_2",
+          "label": "Style 2 (Ragebait - Stacked Grid)"
+        },
+        {
+          "value": "style_3",
+          "label": "Style 3 (In Scrutiny - Top Header)"
+        }
+      ],
+      "default": "style_1"
+    },
+    {
+      "type": "header",
+      "content": "Content Overrides"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title override",
+      "info": "Leave blank to pull from Collection Title."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "tagline",
+      "label": "Tagline / Subtext override",
+      "info": "Leave blank to pull from Collection Metafield / Description."
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Custom link override",
+      "info": "Leave blank to link directly to the Collection URL."
+    },
+    {
+      "type": "header",
+      "content": "Image Overrides (Hybrid Fallback)"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Primary Image override",
+      "info": "Falls back to collection featured image."
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Secondary Image override",
+      "info": "Falls back to collection metafield (custom.secondary_image) or 2nd product image."
+    },
+    {
+      "type": "image_picker",
+      "id": "image_3",
+      "label": "Accent Image override",
+      "info": "Falls back to collection metafield (custom.accent_image) or 3rd product image."
+    },
+    {
+      "type": "header",
+      "content": "Layout Details"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_divider",
+      "label": "Show vertical divider line",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "Editorial Collection",
+      "category": "t:categories.collections",
+      "settings": {
+        "layout_style": "style_1",
+        "title": "SCANDALICIOUS",
+        "tagline": "THE SWEETEST AFFAIR."
+      }
+    }
+  ]
+}
+{% endschema %}

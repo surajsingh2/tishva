@@ -1,0 +1,292 @@
+{% comment %}
+  Section: Dynamic Collection Banner
+  Description: Fetches image and text directly from a selected collection.
+{% endcomment %}
+
+{%- assign collection_handle = section.settings.collection_handle -%}
+{%- assign target_collection = collections[collection_handle] -%}
+
+<div class="dynamic-collection-banner section-{{ section.id }}">
+  
+  {%- if collection_handle != blank and target_collection != empty -%}
+    
+    {%- comment %} LOGIC: Determine which image to use (Collection Image > First Product Image > Fallback) {% endcomment -%}
+    {%- assign banner_image = target_collection.image -%}
+    {%- if banner_image == blank -%}
+      {%- assign banner_image = target_collection.products.first.featured_image -%}
+    {%- endif -%}
+
+    <div class="banner-container">
+      {%- if banner_image != blank -%}
+        <div class="banner-image-wrapper">
+          {{ banner_image | image_url: width: 2000 | image_tag: 
+            loading: 'lazy', 
+            widths: '375, 550, 750, 1100, 1500, 1780, 2000', 
+            class: 'banner-img' 
+          }}
+        </div>
+      {%- else -%}
+        {%- comment %} Fallback SVG if collection exists but has no images {% endcomment -%}
+        <div class="banner-image-wrapper placeholder-wrapper">
+          {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
+      {%- endif -%}
+
+      <div class="banner-overlay" style="opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>
+
+      <div class="banner-content text-{{ section.settings.text_alignment }}">
+        <h2 class="banner-title">{{ target_collection.title }}</h2>
+        {%- if section.settings.show_description and target_collection.description != blank -%}
+          <div class="banner-description rte">
+            {{ target_collection.description | strip_html | truncatewords: 30 }}
+          </div>
+        {%- endif -%}
+        
+        {%- if section.settings.show_button -%}
+          <a href="{{ target_collection.url }}" class="banner-btn">
+            {{ section.settings.button_text }}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+
+  {%- else -%}
+    {%- comment %} ONBOARDING: What shows when no collection is selected in the editor {% endcomment -%}
+    <div class="banner-container">
+      <div class="banner-image-wrapper placeholder-wrapper">
+        {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+      <div class="banner-overlay" style="opacity: 0.4;"></div>
+      <div class="banner-content text-center">
+        <h2 class="banner-title">Select a Collection</h2>
+        <div class="banner-description">
+          Choose a collection in the section settings to display its image and description here.
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+
+</div>
+
+<style>
+  /* Section Scoped Variables */
+  .section-{{ section.id }} {
+    --banner-height: {{ section.settings.height }}px;
+    --text-color: {{ section.settings.text_color }};
+    --btn-bg: {{ section.settings.button_bg }};
+    --btn-text: {{ section.settings.button_text_color }};
+  }
+
+  /* Layout Styles */
+  .dynamic-collection-banner {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .banner-container {
+    position: relative;
+    height: var(--banner-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Image Handling */
+  .banner-image-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .banner-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .placeholder-wrapper {
+    background-color: #f3f3f3;
+  }
+  
+  .placeholder-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    fill: #e0e0e0;
+  }
+
+  /* Overlay */
+  .banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    z-index: 1;
+  }
+
+  /* Text Content */
+  .banner-content {
+    position: relative;
+    z-index: 2;
+    padding: 20px;
+    max-width: 800px;
+    width: 100%;
+    color: var(--text-color);
+  }
+
+  .text-left { text-align: left; align-items: flex-start; }
+  .text-center { text-align: center; align-items: center; }
+  .text-right { text-align: right; align-items: flex-end; }
+
+  .banner-title {
+    margin: 0 0 15px;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: inherit;
+    line-height: 1.2;
+  }
+
+  .banner-description {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    color: inherit;
+  }
+
+  /* Button */
+  .banner-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: opacity 0.3s;
+  }
+
+  .banner-btn:hover {
+    opacity: 0.9;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .section-{{ section.id }} {
+      --banner-height: 300px; /* Force smaller height on mobile */
+    }
+    .banner-title {
+      font-size: 1.8rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Collection Data Banner",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Data Source"
+    },
+    {
+      "type": "collection",
+      "id": "collection_handle",
+      "label": "Select Collection",
+      "info": "Image and text will be pulled from this collection."
+    },
+    {
+      "type": "header",
+      "content": "Layout & Design"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "min": 200,
+      "max": 800,
+      "step": 50,
+      "unit": "px",
+      "label": "Banner Height (Desktop)",
+      "default": 450
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "label": "Overlay Opacity",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show Collection Description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button",
+      "label": "Show 'Shop Now' Button",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Label",
+      "default": "Shop Collection"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Button Background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text",
+      "default": "#000000"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Data Banner",
+      "category": "Image"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,252 @@
+{% comment %}
+  Renders a price range slider with Shopify Theme UI.
+  Usage: {% render 'price-slider', filter: filter %}
+{% endcomment %}
+
+{%- liquid
+  assign uses_comma_decimals = false
+  assign currencies_using_comma_decimals = 'ANG,ARS,BRL,BYN,BYR,CLF,CLP,COP,CRC,CZK,DKK,EUR,HRK,HUF,IDR,ISK,MZN,NOK,PLN,RON,RUB,SEK,TRY,UYU,VES,VND' | split: ','
+  if currencies_using_comma_decimals contains cart.currency.iso_code
+    assign uses_comma_decimals = true
+  endif
+
+  assign max_price = filter.range_max | money_without_currency | replace: ',', ''
+  if uses_comma_decimals
+    assign max_price = max_price | replace: '.', '' | replace: ',', '.'
+  endif
+  assign max_price_number = max_price | plus: 0 | ceil
+
+  assign min_value = 0
+  if filter.min_value.value
+    assign min_val = filter.min_value.value | money_without_currency | replace: ',', ''
+    if uses_comma_decimals
+      assign min_val = min_val | replace: '.', '' | replace: ',', '.'
+    endif
+    assign min_value = min_val | plus: 0 | floor
+  endif
+
+  assign max_value = max_price_number
+  if filter.max_value.value
+    assign max_val = filter.max_value.value | money_without_currency | replace: ',', ''
+    if uses_comma_decimals
+      assign max_val = max_val | replace: '.', '' | replace: ',', '.'
+    endif
+    assign max_value = max_val | plus: 0 | ceil
+  endif
+-%}
+
+<accordion-custom class="facets__item" open-by-default-on-mobile>
+  <details class="facets__panel" open>
+    <summary class="facets__summary">
+      <span class="facets__label">{{ filter.label | escape }}</span>
+      <span class="svg-wrapper icon-caret icon-animated">
+        <svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-caret" viewBox="0 0 10 6">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M9.354.646a.5.5 0 00-.708 0L5 4.293 1.354.646a.5.5 0 00-.708.708l4 4a.5.5 0 00.708 0l4-4a.5.5 0 000-.708z" fill="currentColor"></path>
+        </svg>
+      </span>
+    </summary>
+
+    <div class="facets__panel-content details-content">
+      <div class="price-slider-wrapper">
+        
+        <div class="price-slider-display">
+          <span>{{ cart.currency.symbol }}<span class="min-display">{{ min_value }}</span></span>
+          <span>-</span>
+          <span>{{ cart.currency.symbol }}<span class="max-display">{{ max_value }}</span></span>
+        </div>
+
+        <div class="range-slider-container">
+          <div class="slider-track"></div>
+          <div class="slider-range-highlight"></div>
+          <input type="range" class="range-min" min="0" max="{{ max_price_number }}" value="{{ min_value }}" step="1">
+          <input type="range" class="range-max" min="0" max="{{ max_price_number }}" value="{{ max_value }}" step="1">
+        </div>
+
+        <div class="price-inputs hidden" style="display:none;">
+          <input 
+            type="number" 
+            class="input-min" 
+            name="{{ filter.min_value.param_name }}"
+            {% if filter.min_value.value %}value="{{ min_value }}"{% endif %}
+            min="0" 
+            max="{{ max_price_number }}"
+          >
+          <input 
+            type="number" 
+            class="input-max" 
+            name="{{ filter.max_value.param_name }}"
+            {% if filter.max_value.value %}value="{{ max_value }}"{% endif %}
+            min="0" 
+            max="{{ max_price_number }}"
+          >
+        </div>
+
+      </div>
+    </div>
+  </details>
+</accordion-custom>
+
+<style>
+  /* UPDATED: Equal Top/Bottom Padding (15px) */
+  .price-slider-wrapper {
+    padding: 15px 5px; 
+    width: 200px;
+    box-sizing: border-box;
+  }
+
+  /* Font Styling - 12px & Facet Label Font */
+  .price-slider-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    
+    font-family: var(--font-body-family); 
+    font-size: 12px; 
+    letter-spacing: 0;
+    color: rgb(var(--color-foreground));
+  }
+  
+  .price-slider-display span {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+  }
+
+  /* Slider Container - Centered Vertically */
+  .range-slider-container {
+    position: relative;
+    height: 18px; 
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+
+  /* Slider Track */
+  .slider-track {
+    position: absolute;
+    width: 100%;
+    height: 4px;
+    background-color: rgba(var(--color-foreground), 0.2);
+    border-radius: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 0;
+  }
+
+  /* Active Slider Highlight */
+  .slider-range-highlight {
+    position: absolute;
+    height: 4px;
+    background-color: rgb(52 16 26 / 1.0);
+    border-radius: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+  }
+
+  /* Range Inputs */
+  .range-slider-container input[type="range"] {
+    position: absolute;
+    width: 100%;
+    height: 18px;
+    background: none;
+    pointer-events: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    z-index: 2;
+    padding: 0;
+  }
+
+  /* Thumb Styling - Perfectly Centered */
+  .range-slider-container input[type="range"]::-webkit-slider-thumb {
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    background: rgb(52 16 26 / 1.0);
+    border: 2px solid rgb(52 16 26 / 1.0);
+    pointer-events: auto;
+    -webkit-appearance: none;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    margin-top: 0; 
+  }
+
+  .range-slider-container input[type="range"]::-moz-range-thumb {
+    height: 18px;
+    width: 18px;
+    border: 2px solid rgb(52 16 26 / 1.0);
+    border-radius: 50%;
+    background: rgb(52 16 26 / 1.0);
+    pointer-events: auto;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    border: none;
+  }
+
+  .facets__summary {
+    padding-right: 1.5rem;
+  }
+</style>
+
+<script>
+  (function() {
+    const scriptTag = document.currentScript;
+    const wrapper = scriptTag.previousElementSibling.tagName === 'STYLE' 
+      ? scriptTag.previousElementSibling.previousElementSibling 
+      : scriptTag.previousElementSibling;
+
+    if (!wrapper) return;
+
+    const rangeMin = wrapper.querySelector('.range-min');
+    const rangeMax = wrapper.querySelector('.range-max');
+    const inputMin = wrapper.querySelector('.input-min');
+    const inputMax = wrapper.querySelector('.input-max');
+    const highlight = wrapper.querySelector('.slider-range-highlight');
+    const minDisplay = wrapper.querySelector('.min-display');
+    const maxDisplay = wrapper.querySelector('.max-display');
+    
+    const minGap = 0;
+    const sliderMaxValue = parseInt(rangeMax.max);
+
+    function updateSlider(event) {
+      let minVal = parseInt(rangeMin.value);
+      let maxVal = parseInt(rangeMax.value);
+
+      if (maxVal - minVal < minGap) {
+        if (event.target === rangeMin) {
+          rangeMin.value = maxVal - minGap;
+        } else {
+          rangeMax.value = minVal + minGap;
+        }
+      } else {
+        minDisplay.textContent = minVal;
+        maxDisplay.textContent = maxVal;
+
+        const percent1 = (minVal / sliderMaxValue) * 100;
+        const percent2 = (maxVal / sliderMaxValue) * 100;
+        highlight.style.left = percent1 + "%";
+        highlight.style.width = (percent2 - percent1) + "%";
+        
+        inputMin.value = minVal;
+        inputMax.value = maxVal;
+      }
+    }
+
+    updateSlider({ target: null });
+
+    rangeMin.addEventListener('input', updateSlider);
+    rangeMax.addEventListener('input', updateSlider);
+
+    function triggerFilter() {
+      inputMin.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    rangeMin.addEventListener('change', triggerFilter);
+    rangeMax.addEventListener('change', triggerFilter);
+  })();
+</script>

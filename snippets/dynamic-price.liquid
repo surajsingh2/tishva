@@ -1,0 +1,90 @@
+{%- liquid
+  # Accepts: product (p), optional variant (v). Returns integer cents.
+
+  assign p = product | default: product_resource
+  if p == blank
+    assign p = closest.product
+  endif
+
+  assign v = variant
+  if v == blank and p
+    assign v = p.selected_or_first_available_variant
+  endif
+
+  # --- Metal type ---
+  assign metal_type = v.metafields.custom.metal_type | default: p.metafields.custom.metal_type | default: '' | downcase | strip
+
+  # --- Read metafields (variant preferred -> product fallback) ---
+  assign gold_weight           = v.metafields.custom.gold_weight           | default: p.metafields.custom.gold_weight           | default: 0 | plus: 0
+  assign gold_type             = v.metafields.custom.gold_type             | default: p.metafields.custom.gold_type             | default: '' | downcase | strip
+  assign silver_weight         = v.metafields.custom.silver_weight         | default: p.metafields.custom.silver_weight         | default: 0 | plus: 0
+  assign platinum_weight       = v.metafields.custom.platinum_weight       | default: p.metafields.custom.platinum_weight       | default: 0 | plus: 0
+
+  assign diamond_weight        = v.metafields.custom.diamond_weight        | default: p.metafields.custom.diamond_weight        | default: 0 | plus: 0
+  assign small_diamond_weight  = v.metafields.custom.small_diamond_weight  | default: p.metafields.custom.small_diamond_weight  | default: 0 | plus: 0
+  assign colourstone_weight    = v.metafields.custom.colourstone_weight    | default: p.metafields.custom.colourstone_weight    | default: 0 | plus: 0
+  assign solitaire_weight      = v.metafields.custom.solitaire_weight      | default: p.metafields.custom.solitaire_weight      | default: 0 | plus: 0
+
+  # --- Shop metafields (per unit rates) ---
+  assign gold_price            = shop.metafields.custom.gold_price          | plus: 0
+  assign silver_price          = shop.metafields.custom.silver_price        | plus: 0
+  assign platinum_price        = shop.metafields.custom.platinum_price      | plus: 0
+  assign diamond_price         = shop.metafields.custom.diamond_price       | plus: 0
+  assign small_diamond_price   = shop.metafields.custom.small_diamond_price | plus: 0
+  assign colourstone_price     = shop.metafields.custom.colourstone_price   | plus: 0
+  assign solitaire_price       = shop.metafields.custom.solitaire_price     | plus: 0
+
+  # --- Initialize total cost ---
+  assign total_cost = 0
+
+  # -------------------------------
+  # GOLD LOGIC
+  # -------------------------------
+  if metal_type == 'gold'
+    assign gold_factor = 1
+    assign making_rate = 0
+    if gold_type == '14k' or gold_type == '14kt'
+      assign gold_factor = 0.60
+      assign making_rate = 1800
+    elsif gold_type == '18k' or gold_type == '18kt'
+      assign gold_factor = 0.77
+      assign making_rate = 2000
+    endif
+
+    assign gold_cost          = gold_price          | times: gold_weight | times: gold_factor
+    assign making_charge      = making_rate         | times: gold_weight
+    assign small_diamond_cost = small_diamond_price | times: small_diamond_weight
+    assign colourstone_cost   = colourstone_price   | times: colourstone_weight
+    assign solitaire_cost     = solitaire_price     | times: solitaire_weight
+
+    assign total_cost = gold_cost | plus: making_charge | plus: small_diamond_cost | plus: colourstone_cost | plus: solitaire_cost
+
+  # -------------------------------
+  # SILVER LOGIC
+  # -------------------------------
+  elsif metal_type == 'silver'
+    assign silver_cost         = silver_price        | times: silver_weight
+    assign making_charge       = 550                 | times: silver_weight
+    assign small_diamond_cost  = small_diamond_price | times: small_diamond_weight
+    assign colourstone_cost    = colourstone_price   | times: colourstone_weight
+    assign solitaire_cost      = solitaire_price     | times: solitaire_weight
+
+    assign total_cost = silver_cost | plus: making_charge | plus: small_diamond_cost | plus: colourstone_cost | plus: solitaire_cost
+
+  # -------------------------------
+  # PLATINUM LOGIC
+  # -------------------------------
+  elsif metal_type == 'platinum'
+    assign platinum_cost       = platinum_price      | times: platinum_weight
+    assign making_charge       = 4500                | times: platinum_weight
+    assign small_diamond_cost  = small_diamond_price | times: small_diamond_weight
+    assign colourstone_cost    = colourstone_price   | times: colourstone_weight
+    assign solitaire_cost      = solitaire_price     | times: solitaire_weight
+
+    assign total_cost = platinum_cost | plus: making_charge | plus: small_diamond_cost | plus: colourstone_cost | plus: solitaire_cost
+  endif
+
+  # Convert to cents for money filters & comparisons
+  assign price_cents = total_cost | times: 100 | round
+-%}
+{{ price_cents }}

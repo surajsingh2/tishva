@@ -1,0 +1,59 @@
+{% comment %}
+  Dynamic pricing snippet for Horizon Theme
+  Logic:
+  - Detect metal type (gold, silver, platinum)
+  - Apply gold purity factor if gold
+  - Add diamond, colorstone, solitaire, small diamond prices
+  - Add making charges (from metafields)
+  - Prices per gram/carat are stored as shop metafields
+  - Weights are stored as product metafields
+{% endcomment %}
+
+{% assign metal_type = product.metafields.custom.metal_type | downcase %}
+
+{% assign gold_price = shop.metafields.global.gold_price_per_gram %}
+{% assign silver_price = shop.metafields.global.silver_price_per_gram %}
+{% assign platinum_price = shop.metafields.global.platinum_price_per_gram %}
+{% assign diamond_price = shop.metafields.global.diamond_price_per_carat %}
+{% assign small_diamond_price = shop.metafields.global.small_diamond_price_per_carat %}
+{% assign colourstone_price = shop.metafields.global.colourstone_price_per_carat %}
+{% assign solitaire_price = shop.metafields.global.solitaire_price_per_carat %}
+
+{% assign gold_weight = product.metafields.custom.gold_weight | default: 0 | plus: 0 %}
+{% assign silver_weight = product.metafields.custom.silver_weight | default: 0 | plus: 0 %}
+{% assign platinum_weight = product.metafields.custom.platinum_weight | default: 0 | plus: 0 %}
+{% assign diamond_weight = product.metafields.custom.diamond_weight | default: 0 | plus: 0 %}
+{% assign small_diamond_weight = product.metafields.custom.small_diamond_weight | default: 0 | plus: 0 %}
+{% assign colourstone_weight = product.metafields.custom.colourstone_weight | default: 0 | plus: 0 %}
+{% assign solitaire_weight = product.metafields.custom.solitaire_weight | default: 0 | plus: 0 %}
+
+{% assign making_charge = product.metafields.custom.making_charge | default: 0 | plus: 0 %}
+
+{% assign purity = product.metafields.custom.gold_purity | default: '' | downcase %}
+
+{% if metal_type == "gold" %}
+  {% if purity contains "18" %}
+    {% assign metal_cost = gold_price | times: gold_weight | times: 0.77 %}
+  {% elsif purity contains "14" %}
+    {% assign metal_cost = gold_price | times: gold_weight | times: 0.60 %}
+  {% else %}
+    {% assign metal_cost = gold_price | times: gold_weight %}
+  {% endif %}
+{% elsif metal_type == "silver" %}
+  {% assign metal_cost = silver_price | times: silver_weight %}
+{% elsif metal_type == "platinum" %}
+  {% assign metal_cost = platinum_price | times: platinum_weight %}
+{% else %}
+  {% assign metal_cost = 0 %}
+{% endif %}
+
+{% assign total_price = metal_cost
+  | plus: diamond_price | times: diamond_weight
+  | plus: small_diamond_price | times: small_diamond_weight
+  | plus: colourstone_price | times: colourstone_weight
+  | plus: solitaire_price | times: solitaire_weight
+  | plus: making_charge %}
+
+<span class="product-price">
+  {{ total_price | money }}
+</span>

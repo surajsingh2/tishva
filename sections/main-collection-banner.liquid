@@ -1,0 +1,303 @@
+{% comment %}
+  Section: Advanced Auto Collection Banner
+  Features: 9-Point Alignment, Responsive Height, Full Width, SEO Heading Options
+{% endcomment %}
+
+{%- assign target_collection = collection -%}
+
+<div class="auto-collection-banner section-{{ section.id }}">
+  
+  {%- if target_collection != blank -%}
+    
+    {%- comment %} --- IMAGE LOGIC --- {% endcomment -%}
+    {%- assign banner_image = target_collection.image -%}
+    {%- if banner_image == blank -%}
+      {%- assign banner_image = target_collection.products.first.featured_image -%}
+    {%- endif -%}
+
+    <div class="banner-container">
+      
+      {%- comment %} 1. Background Image {% endcomment -%}
+      {%- if banner_image != blank -%}
+        <div class="banner-image-wrapper">
+          {{ banner_image | image_url: width: 3000 | image_tag: 
+            loading: 'eager', 
+            widths: '375, 550, 750, 1100, 1500, 1780, 2000, 3000', 
+            class: 'banner-img' 
+          }}
+        </div>
+      {%- else -%}
+        <div class="banner-image-wrapper placeholder-wrapper">
+          {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
+      {%- endif -%}
+
+      {%- comment %} 2. Overlay {% endcomment -%}
+      <div class="banner-overlay" style="opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>
+
+      {%- comment %} 3. Content Wrapper (Handles the 9-point positioning) {% endcomment -%}
+      <div class="banner-content-wrapper position-{{ section.settings.text_position }}">
+        
+        <div class="banner-text-box text-{{ section.settings.text_alignment }}">
+          
+          {%- if section.settings.show_title -%}
+            {%- comment %} Dynamic Heading Tag (H1, H2, etc.) {% endcomment -%}
+            <{{ section.settings.heading_tag }} class="banner-title">
+              {{ target_collection.title }}
+            </{{ section.settings.heading_tag }}>
+          {%- endif -%}
+
+          {%- if section.settings.show_description and target_collection.description != blank -%}
+            <div class="banner-description rte">
+              {{ target_collection.description }}
+            </div>
+          {%- endif -%}
+
+        </div>
+
+      </div>
+    </div>
+
+  {%- else -%}
+    {%- comment %} Fallback for testing outside collection pages {% endcomment -%}
+    <div class="banner-container" style="background: #eee; color: #333; height: 300px; justify-content: center; align-items: center; display: flex;">
+      <h2>Please view this on a Collection Page</h2>
+    </div>
+  {%- endif -%}
+
+</div>
+
+<style>
+  /* --- Section Variables --- */
+  .section-{{ section.id }} {
+    --banner-height-desktop: {{ section.settings.height_desktop }}px;
+    --banner-height-mobile: {{ section.settings.height_mobile }}px;
+    --text-color: {{ section.settings.text_color }};
+    --heading-size: {{ section.settings.heading_size }}px;
+    --desc-size: {{ section.settings.desc_size }}px;
+  }
+
+  /* --- Full Width Fix --- */
+  .auto-collection-banner {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    overflow: hidden;
+  }
+
+  .banner-container {
+    position: relative;
+    width: 100%;
+    height: var(--banner-height-desktop);
+    overflow: hidden;
+  }
+
+  /* --- Images --- */
+  .banner-image-wrapper {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+  }
+  .banner-img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .placeholder-wrapper { background-color: #f3f3f3; }
+  .placeholder-svg { width: 100%; height: 100%; fill: #e0e0e0; display: block; }
+
+  /* --- Overlay --- */
+  .banner-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #000; z-index: 1; pointer-events: none;
+  }
+
+  /* --- 9-POINT POSITIONING SYSTEM --- */
+  .banner-content-wrapper {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 2;
+    padding: 40px; /* Safe padding from edges */
+    display: flex;
+  }
+
+  /* The 9 Grid Points */
+  .position-top-left      { align-items: flex-start; justify-content: flex-start; }
+  .position-top-center    { align-items: flex-start; justify-content: center; }
+  .position-top-right     { align-items: flex-start; justify-content: flex-end; }
+  
+  .position-middle-left   { align-items: center;     justify-content: flex-start; }
+  .position-middle-center { align-items: center;     justify-content: center; }
+  .position-middle-right  { align-items: center;     justify-content: flex-end; }
+  
+  .position-bottom-left   { align-items: flex-end;   justify-content: flex-start; }
+  .position-bottom-center { align-items: flex-end;   justify-content: center; }
+  .position-bottom-right  { align-items: flex-end;   justify-content: flex-end; }
+
+  /* --- Text Styling --- */
+  .banner-text-box {
+    max-width: 600px; /* Limits width so text doesn't stretch too far */
+    width: 100%;
+    color: var(--text-color);
+  }
+
+  .text-left   { text-align: left; }
+  .text-center { text-align: center; }
+  .text-right  { text-align: right; }
+
+  .banner-title {
+    margin: 0 0 15px;
+    font-weight: bold;
+    color: inherit;
+    line-height: 1.1;
+    font-size: var(--heading-size);
+  }
+
+  .banner-description {
+    font-size: var(--desc-size);
+    line-height: 1.5;
+    color: inherit;
+  }
+  
+  .banner-description.rte p { margin-bottom: 10px; }
+  .banner-description.rte a { color: inherit; text-decoration: underline; }
+
+  /* --- Mobile Responsive --- */
+  @media (max-width: 768px) {
+    .banner-container { height: var(--banner-height-mobile); }
+    
+    /* On mobile, usually Center-Center or Bottom-Center looks best. 
+       We allow it to inherit, but reduce padding. */
+    .banner-content-wrapper { padding: 20px; }
+    
+    .banner-title { font-size: calc(var(--heading-size) * 0.7); } /* 70% of desktop size */
+    .banner-description { font-size: calc(var(--desc-size) * 0.9); }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Auto Collection Banner",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Dimensions"
+    },
+    {
+      "type": "range",
+      "id": "height_desktop",
+      "min": 200, "max": 900, "step": 50, "unit": "px",
+      "label": "Desktop Height",
+      "default": 450
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "min": 200, "max": 600, "step": 10, "unit": "px",
+      "label": "Mobile Height",
+      "default": 300
+    },
+    {
+      "type": "header",
+      "content": "Alignment & Position"
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Content Position (9 Points)",
+      "options": [
+        { "value": "top-left", "label": "Top Left" },
+        { "value": "top-center", "label": "Top Center" },
+        { "value": "top-right", "label": "Top Right" },
+        { "value": "middle-left", "label": "Middle Left" },
+        { "value": "middle-center", "label": "Middle Center" },
+        { "value": "middle-right", "label": "Middle Right" },
+        { "value": "bottom-left", "label": "Bottom Left" },
+        { "value": "bottom-center", "label": "Bottom Center" },
+        { "value": "bottom-right", "label": "Bottom Right" }
+      ],
+      "default": "middle-center"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text Alignment",
+      "info": "Aligns the text inside the box",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Heading Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show Title",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading Tag (SEO)",
+      "options": [
+        { "value": "h1", "label": "H1 (Primary)" },
+        { "value": "h2", "label": "H2 (Secondary)" },
+        { "value": "h3", "label": "H3" }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 20, "max": 100, "step": 2, "unit": "px",
+      "label": "Heading Font Size",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Description Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show Description",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "desc_size",
+      "min": 12, "max": 30, "step": 1, "unit": "px",
+      "label": "Description Font Size",
+      "default": 18
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0, "max": 90, "step": 5, "unit": "%",
+      "label": "Overlay Opacity",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Auto Collection Banner"
+    }
+  ]
+}
+{% endschema %}

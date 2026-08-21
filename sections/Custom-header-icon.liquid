@@ -1,0 +1,105 @@
+{% comment %}
+  Custom Icon Header Section with dynamic menu items and icons
+{% endcomment %}
+
+<section class="custom-icon-header">
+  <div class="icon-header-wrapper">
+    <ul class="icon-header-menu">
+      {% for block in section.blocks %}
+        <li>
+          <a href="{{ block.settings.link }}">
+            {% if block.settings.icon != blank %}
+              <img src="{{ block.settings.icon | image_url: width: 48 }}" alt="{{ block.settings.title }}">
+            {% endif %}
+            <span>{{ block.settings.title }}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+<style>
+.custom-icon-header {
+  width: 100%;
+  background: #fff;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+.icon-header-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+.icon-header-menu {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin: 0;
+  padding: 0;
+}
+.icon-header-menu li a {
+  text-align: center;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: color 0.3s ease;
+}
+.icon-header-menu li a img {
+  width: 28px;
+  height: 28px;
+  margin-bottom: 6px;
+}
+.icon-header-menu li a:hover {
+  color: #000;
+}
+@media (max-width: 768px) {
+  .icon-header-menu {
+    gap: 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+</style>
+
+{% schema %}
+{
+  "name": "Custom Icon Header",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "menu_item",
+      "name": "Menu Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Menu Title",
+          "default": "Category"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Menu Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Icon Header",
+      "category": "Header"
+    }
+  ]
+}
+{% endschema %}

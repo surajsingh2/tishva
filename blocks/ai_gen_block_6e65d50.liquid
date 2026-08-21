@@ -1,0 +1,584 @@
+{% doc %}
+  @prompt
+    Create a section with heading and paragrapgh to talk about the Why Lab-Grown Diamonds - Headline:
+    Brilliance Without Compromise
+    Body Copy:
+    At Tishva, we believe luxury should be beautiful in every way - in how it looks, how it’s made,
+    and how it makes you feel.
+    That’s why we choose lab-grown diamonds.
+    They offer the same brilliance, durability, and timeless appeal as mined diamonds, while being
+    ethically created and environmentally responsible.
+    By embracing lab-grown diamonds, we make fine jewellery more accessible, more conscious,
+    and more aligned with the values of the modern woman.
+    Every piece is crafted in hallmarked gold and set with IGI-certified diamonds, so you never
+    have to choose between luxury and responsibility., can u make it like a split section right image left content where the points are in bulleted list
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-lab-grown-diamonds-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: {{ block.settings.padding_top }}px {{ block.settings.padding_horizontal }}px {{ block.settings.padding_bottom }}px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-lab-grown-diamonds__container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.content_max_width }}px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: {{ block.settings.column_gap }}px;
+  }
+
+  .ai-lab-grown-diamonds__content-{{ ai_gen_id }} {
+    flex: 1;
+    text-align: {{ block.settings.text_alignment }};
+  }
+
+  .ai-lab-grown-diamonds__image-wrapper-{{ ai_gen_id }} {
+    flex: 1;
+  }
+
+  .ai-lab-grown-diamonds__image-{{ ai_gen_id }} {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: {{ block.settings.image_border_radius }}px;
+  }
+
+  .ai-lab-grown-diamonds__image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    aspect-ratio: {{ block.settings.image_aspect_ratio }};
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    position: relative;
+  }
+
+  .ai-lab-grown-diamonds__image-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-lab-grown-diamonds__empty-state-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 20px;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .ai-lab-grown-diamonds__heading-{{ ai_gen_id }} {
+    color: {{ block.settings.heading_color }};
+    font-size: {{ block.settings.heading_size }}px;
+    margin: 0 0 {{ block.settings.spacing_below_heading }}px;
+    line-height: 1.2;
+  }
+
+  .ai-lab-grown-diamonds__intro-{{ ai_gen_id }} {
+    color: {{ block.settings.body_color }};
+    font-size: {{ block.settings.body_size }}px;
+    line-height: {{ block.settings.body_line_height }};
+    margin: 0 0 {{ block.settings.spacing_below_intro }}px;
+  }
+
+  .ai-lab-grown-diamonds__list-{{ ai_gen_id }} {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+  }
+
+  .ai-lab-grown-diamonds__list-item-{{ ai_gen_id }} {
+    color: {{ block.settings.body_color }};
+    font-size: {{ block.settings.body_size }}px;
+    line-height: {{ block.settings.body_line_height }};
+    margin-bottom: {{ block.settings.list_item_spacing }}px;
+    padding-left: {{ block.settings.bullet_spacing }}px;
+    position: relative;
+  }
+
+  .ai-lab-grown-diamonds__list-item-{{ ai_gen_id }}:last-child {
+    margin-bottom: 0;
+  }
+
+  .ai-lab-grown-diamonds__list-item-{{ ai_gen_id }}::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: {{ block.settings.bullet_top_offset }}px;
+    width: {{ block.settings.bullet_size }}px;
+    height: {{ block.settings.bullet_size }}px;
+    background-color: {{ block.settings.bullet_color }};
+    border-radius: 50%;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-lab-grown-diamonds-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding_top_mobile }}px {{ block.settings.padding_horizontal_mobile }}px {{ block.settings.padding_bottom_mobile }}px;
+    }
+
+    .ai-lab-grown-diamonds__container-{{ ai_gen_id }} {
+      flex-direction: column;
+      gap: {{ block.settings.column_gap_mobile }}px;
+    }
+
+    .ai-lab-grown-diamonds__heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size_mobile }}px;
+    }
+
+    .ai-lab-grown-diamonds__intro-{{ ai_gen_id }},
+    .ai-lab-grown-diamonds__list-item-{{ ai_gen_id }} {
+      font-size: {{ block.settings.body_size_mobile }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-lab-grown-diamonds-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-lab-grown-diamonds__container-{{ ai_gen_id }}">
+    <div class="ai-lab-grown-diamonds__content-{{ ai_gen_id }}">
+      {% if block.settings.heading != blank %}
+        <h2 class="ai-lab-grown-diamonds__heading-{{ ai_gen_id }}">
+          {{ block.settings.heading }}
+        </h2>
+      {% endif %}
+
+      {% if block.settings.intro_text != blank %}
+        <div class="ai-lab-grown-diamonds__intro-{{ ai_gen_id }}">
+          {{ block.settings.intro_text }}
+        </div>
+      {% endif %}
+
+      <ul class="ai-lab-grown-diamonds__list-{{ ai_gen_id }}">
+        {% if block.settings.list_item_1 != blank %}
+          <li class="ai-lab-grown-diamonds__list-item-{{ ai_gen_id }}">
+            {{ block.settings.list_item_1 }}
+          </li>
+        {% endif %}
+        {% if block.settings.list_item_2 != blank %}
+          <li class="ai-lab-grown-diamonds__list-item-{{ ai_gen_id }}">
+            {{ block.settings.list_item_2 }}
+          </li>
+        {% endif %}
+        {% if block.settings.list_item_3 != blank %}
+          <li class="ai-lab-grown-diamonds__list-item-{{ ai_gen_id }}">
+            {{ block.settings.list_item_3 }}
+          </li>
+        {% endif %}
+        {% if block.settings.list_item_4 != blank %}
+          <li class="ai-lab-grown-diamonds__list-item-{{ ai_gen_id }}">
+            {{ block.settings.list_item_4 }}
+          </li>
+        {% endif %}
+        {% if block.settings.list_item_5 != blank %}
+          <li class="ai-lab-grown-diamonds__list-item-{{ ai_gen_id }}">
+            {{ block.settings.list_item_5 }}
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <div class="ai-lab-grown-diamonds__image-wrapper-{{ ai_gen_id }}">
+      {% if block.settings.image %}
+        <img
+          src="{{ block.settings.image | image_url: width: 1200 }}"
+          alt="{{ block.settings.image.alt | escape }}"
+          loading="lazy"
+          width="{{ block.settings.image.width }}"
+          height="{{ block.settings.image.height }}"
+          class="ai-lab-grown-diamonds__image-{{ ai_gen_id }}"
+        >
+      {% else %}
+        <div class="ai-lab-grown-diamonds__image-placeholder-{{ ai_gen_id }}">
+          {{ 'product-1' | placeholder_svg_tag }}
+          <div class="ai-lab-grown-diamonds__empty-state-{{ ai_gen_id }}">
+            Add an image
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Lab-grown diamonds",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "<p>Brilliance Without Compromise</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "intro_text",
+      "label": "Introduction text",
+      "default": "<p>At Tishva, we believe luxury should be beautiful in every way - in how it looks, how it's made, and how it makes you feel. That's why we choose lab-grown diamonds.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "list_item_1",
+      "label": "List item 1",
+      "default": "<p>They offer the same brilliance, durability, and timeless appeal as mined diamonds, while being ethically created and environmentally responsible.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "list_item_2",
+      "label": "List item 2",
+      "default": "<p>By embracing lab-grown diamonds, we make fine jewellery more accessible, more conscious, and more aligned with the values of the modern woman.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "list_item_3",
+      "label": "List item 3",
+      "default": "<p>Every piece is crafted in hallmarked gold and set with IGI-certified diamonds, so you never have to choose between luxury and responsibility.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "list_item_4",
+      "label": "List item 4"
+    },
+    {
+      "type": "richtext",
+      "id": "list_item_5",
+      "label": "List item 5"
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Image aspect ratio",
+      "options": [
+        {
+          "value": "1/1",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "4/3",
+          "label": "Landscape (4:3)"
+        },
+        {
+          "value": "3/4",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "16/9",
+          "label": "Wide (16:9)"
+        }
+      ],
+      "default": "3/4"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "label": "Image border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content max width",
+      "min": 800,
+      "max": 1400,
+      "step": 50,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "label": "Desktop column gap",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "column_gap_mobile",
+      "label": "Mobile column gap",
+      "min": 20,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Heading style"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Desktop size",
+      "min": 16,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Mobile size",
+      "min": 16,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "spacing_below_heading",
+      "label": "Spacing below heading",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Body text style"
+    },
+    {
+      "type": "range",
+      "id": "body_size",
+      "label": "Desktop size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "body_size_mobile",
+      "label": "Mobile size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "body_color",
+      "label": "Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "body_line_height",
+      "label": "Line height",
+      "min": 1,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.6
+    },
+    {
+      "type": "range",
+      "id": "spacing_below_intro",
+      "label": "Spacing below intro",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "List style"
+    },
+    {
+      "type": "range",
+      "id": "list_item_spacing",
+      "label": "Item spacing",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "bullet_size",
+      "label": "Bullet size",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "bullet_spacing",
+      "label": "Bullet spacing",
+      "min": 15,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "bullet_top_offset",
+      "label": "Bullet vertical position",
+      "min": 5,
+      "max": 15,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "color",
+      "id": "bullet_color",
+      "label": "Bullet color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Desktop top padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Desktop bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "label": "Desktop horizontal padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Mobile top padding",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Mobile bottom padding",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_mobile",
+      "label": "Mobile horizontal padding",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lab-grown diamonds"
+    }
+  ],
+  "tag": null
+}
+{% endschema %}

@@ -1,0 +1,269 @@
+{% doc %}
+  @prompt
+    MAKE AN RESPONSIVE AND ELEGANT 20% DISCOUNT FOR FIRST TIME CUSTOMERS SHOULD HAVE BLACK AND WHITE COLOR SCHEME ALSO SHOULD BE EXACT SAME SIZE AS ADD TO CART BUTTON
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-discount-banner-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    background-color: {{ block.settings.background_color }};
+    color: {{ block.settings.text_color }};
+    border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    font-size: {{ block.settings.font_size }}px;
+    font-weight: {{ block.settings.font_weight }};
+    text-align: center;
+    text-transform: {{ block.settings.text_transform }};
+    letter-spacing: {{ block.settings.letter_spacing }}px;
+    min-height: 48px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.3s ease;}
+
+  .ai-discount-banner-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.hover_background_color }};
+    color: {{ block.settings.hover_text_color }};
+    border-color: {{ block.settings.hover_border_color }};
+  }
+
+  .ai-discount-banner-{{ ai_gen_id }}__icon {
+    margin-right: 8px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .ai-discount-banner-{{ ai_gen_id }}__text {
+    flex-grow: 1;}
+
+  .ai-discount-banner-{{ ai_gen_id }}__highlight {
+    font-weight: 700;
+    font-size: {{ block.settings.font_size | plus: 2 }}px;}
+
+  @media screen and (max-width: 749px) {
+    .ai-discount-banner-{{ ai_gen_id }} {
+      font-size: {{ block.settings.font_size | minus: 2 }}px;
+      padding: 10px 16px;
+      min-height: 44px;
+    }
+
+    .ai-discount-banner-{{ ai_gen_id }}__highlight {
+      font-size: {{ block.settings.font_size }}px;
+    }
+
+    .ai-discount-banner-{{ ai_gen_id }}__icon {
+      width: 18px;
+      height: 18px;margin-right: 6px;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .ai-discount-banner-{{ ai_gen_id }} {
+      font-size: {{ block.settings.font_size | minus: 3 }}px;
+      padding: 8px 12px;
+      min-height: 40px;
+    }
+  }
+{% endstyle %}
+
+<div
+  class="ai-discount-banner-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  {% if block.settings.show_icon %}
+    <svg
+      class="ai-discount-banner-{{ ai_gen_id }}__icon"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+      <path d="M2 17l10 5 10-5"></path>
+      <path d="M2 12l10 5 10-5"></path>
+    </svg>
+  {% endif %}<div class="ai-discount-banner-{{ ai_gen_id }}__text">
+    {% if block.settings.custom_text != blank %}
+      {{ block.settings.custom_text }}
+    {% else %}
+      <span class="ai-discount-banner-{{ ai_gen_id }}__highlight">{{ block.settings.discount_percentage }}% OFF</span>
+      {{ block.settings.offer_text }}
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "First Customer Discount",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Discount Content"
+    },
+    {
+      "type": "range",
+      "id": "discount_percentage",
+      "min": 5,
+      "max": 50,
+      "step": 5,
+      "unit": "%",
+      "label": "Discount percentage",
+      "default": 20
+    },
+    {
+      "type": "text",
+      "id": "offer_text",
+      "label": "Offer text",
+      "default": "for first-time customers"
+    },
+    {
+      "type": "textarea",
+      "id": "custom_text",
+      "label": "Custom text (optional)",
+      "info": "Override default discount text"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "Show icon",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "hover_background_color",
+      "label": "Hover background color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "hover_text_color",
+      "label": "Hover text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "hover_border_color",
+      "label": "Hover border color",
+      "default": "#333333"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text case",
+      "options": [
+        {
+          "value": "none",
+          "label": "Normal"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "range",
+      "id": "letter_spacing",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "unit": "px",
+      "label": "Letter spacing",
+      "default": 0.5
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Border width",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 4
+    }
+  ],
+  "presets": [
+    {
+      "name": "First Customer Discount"
+    }
+  ]
+}
+{% endschema %}

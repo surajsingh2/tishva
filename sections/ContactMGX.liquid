@@ -1,0 +1,250 @@
+{% schema %}
+{
+  "name": "Contact Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "Get in Touch"
+    },
+    {
+      "type": "textarea",
+      "id": "address",
+      "label": "Address",
+      "default": "123 Main Street, Mumbai, India"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Phone Number",
+      "default": "+91 93115 49955"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email Address",
+      "default": "support@example.com"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_number",
+      "label": "WhatsApp Number (with country code)",
+      "default": "+91 93115 49955"
+    },
+    {
+      "type": "textarea",
+      "id": "hours",
+      "label": "Operating Hours",
+      "default": "Mon - Fri: 10AM – 7PM\nSat - Sun: 11AM – 5PM"
+    },
+    {
+      "type": "url",
+      "id": "facebook_url",
+      "label": "Facebook URL",
+      
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram URL",
+      
+    },
+    {
+      "type": "url",
+      "id": "twitter_url",
+      "label": "Twitter URL",
+      
+    },
+    {
+      "type": "url",
+      "id": "map_url",
+      "label": "Google Map Embed URL",
+      
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact Section"
+    }
+  ]
+}
+{% endschema %}
+
+<section class="contact-section">
+  <div class="contact-container page-width">
+    <div class="contact-content">
+      <div class="contact-info">
+        <h2 class="contact-heading">{{ section.settings.heading }}</h2>
+        <ul class="contact-list">
+          <li>
+            
+            <p>{{ section.settings.address }}</p>
+          </li>
+          <li>
+            
+            <a href="tel:{{ section.settings.phone }}">{{ section.settings.phone }}</a>
+          </li>
+          <li>
+            
+            <a href="mailto:{{ section.settings.email }}">{{ section.settings.email }}</a>
+          </li>
+          <li>
+           
+            <a href="https://wa.me/919311549955" target="_blank">Chat on WhatsApp</a>
+          </li>
+        </ul>
+
+        <div class="contact-hours">
+          <h4>Operating Hours</h4>
+          <p style="white-space: pre-line;">{{ section.settings.hours }}</p>
+        </div>
+
+        <div class="contact-social">
+          <h4>Follow Us</h4>
+          <div class="social-icons">
+            {% if section.settings.facebook_url != blank %}
+              <a href="{{ section.settings.facebook_url }}" target="_blank" aria-label="Facebook"><svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+  <path d="M22 12a10 10 0 10-11.62 9.87v-7H8v-2.87h2.38V9.75a3.38 3.38 0 013.63-3.75 15 15 0 012.12.18v2.33H15.6a1.33 1.33 0 00-1.5 1.44v1.81h2.56L16.25 15h-2.15v7A10 10 0 0022 12z"/>
+</svg></a>
+            {% endif %}
+            {% if section.settings.instagram_url != blank %}
+              <a href="{{ section.settings.instagram_url }}" target="_blank" aria-label="Instagram"><svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+  <path d="M7.75 2C4.57 2 2 4.57 2 7.75v8.5C2 19.43 4.57 22 7.75 22h8.5C19.43 22 22 19.43 22 16.25v-8.5C22 4.57 19.43 2 16.25 2h-8.5zM12 7a5 5 0 110 10 5 5 0 010-10zm6.25-1a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5zM12 9a3 3 0 100 6 3 3 0 000-6z"/>
+</svg></a>
+            {% endif %}
+            {% if section.settings.twitter_url != blank %}
+              <a href="{{ section.settings.twitter_url }}" target="_blank" aria-label="Twitter">🐦</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-form">
+        {% form 'contact' %}
+          {% if form.posted_successfully? %}
+            <p class="form-success">Thanks for contacting us. We'll get back to you soon.</p>
+          {% endif %}
+          <div class="form-group">
+            <input type="text" name="contact[name]" placeholder="Your Name" required>
+          </div>
+          <div class="form-group">
+            <input type="email" name="contact[email]" placeholder="Your Email" required>
+          </div>
+          <div class="form-group">
+            <textarea name="contact[body]" placeholder="Your Message" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="contact-submit button">Send Message</button>
+        {% endform %}
+      </div>
+    </div>
+
+    {% if section.settings.map_url != blank %}
+      <div class="contact-map">
+        <iframe src="{{ section.settings.map_url }}" width="100%" height="350" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+.contact-section {
+  padding: 60px 60px;
+}
+.contact-container {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+.contact-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+.contact-info {
+    border-right: 1px solid;
+    padding-right: 8%;
+    /* flex: 1 1 0px; */
+}
+.contact-heading {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+.contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.contact-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.contact-icon {
+  font-size: 20px;
+}
+.contact-list a {
+  color: inherit;
+  text-decoration: none;
+}
+.contact-hours {
+  margin-top: 20px;
+}
+.contact-hours h4,
+.contact-social h4 {
+  margin-bottom: 8px;
+}
+.contact-social {
+  margin-top: 20px;
+}
+.social-icons a {
+  font-size: 20px;
+  margin-right: 15px;
+  text-decoration: none;
+}
+.contact-form {
+  flex: 1 1 300px;
+}
+.form-group {
+  margin-bottom: 16px;
+}
+input[type="text"],
+input[type="email"],
+textarea {
+  width: 100%;
+  padding: 12px;
+  font: inherit;
+  border: 1px solid #ccc;
+  border-radius: 0px;
+  background-color: var(--color-background, #fff);
+  color: var(--color-foreground, #000);
+}
+.contact-submit {
+  padding: 12px 20px;
+  background: var(--color-button-background, #000);
+  color: var(--color-button-text, #fff);
+  border: none;
+  border-radius: 0px;
+  cursor: pointer;
+}
+.contact-submit:hover {
+  opacity: 0.9;
+}
+
+.social-icons {
+    display: flex;
+}
+
+
+.contact-map iframe {
+  width: 100%;
+  height: 350px;
+  border: 0;
+}
+@media (max-width: 768px) {
+  .contact-content {
+    flex-direction: column;
+  }
+}
+</style>

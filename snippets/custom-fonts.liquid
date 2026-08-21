@@ -1,0 +1,234 @@
+<style>
+  /* Agatho Serif Font Family */
+  @font-face {
+    font-family: 'Agatho';
+    src: url('{{ "Agatho-Light.otf" | asset_url }}') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Agatho';
+    src: url('{{ "Agatho-Regular.otf" | asset_url }}') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Agatho';
+    src: url('{{ "Agatho-Medium.otf" | asset_url }}') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Agatho';
+    src: url('{{ "Agatho-Bold.otf" | asset_url }}') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Agatho Narrow';
+    src: url('{{ "Agatho-Narrow.otf" | asset_url }}') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Agatho CAPS';
+    src: url('{{ "Agatho-LightCAPS.otf" | asset_url }}') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Agatho CAPS';
+    src: url('{{ "Agatho-RegularCAPS.otf" | asset_url }}') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Agatho CAPS';
+    src: url('{{ "Agatho-BoldCAPS.otf" | asset_url }}') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  /* Requiem Fine Serif Font */
+  @font-face {
+    font-family: 'Requiem Fine';
+    src: url('{{ "Requiem-Fine-HTF-Roman.otf" | asset_url }}') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  /* Poppins Sans-Serif Font Family */
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-Thin.ttf" | asset_url }}') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-ThinItalic.ttf" | asset_url }}') format('truetype');
+    font-weight: 100;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-ExtraLight.ttf" | asset_url }}') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-ExtraLightItalic.ttf" | asset_url }}') format('truetype');
+    font-weight: 200;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-Light.ttf" | asset_url }}') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-LightItalic.ttf" | asset_url }}') format('truetype');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-Regular.ttf" | asset_url }}') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-Italic.ttf" | asset_url }}') format('truetype');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-Medium.ttf" | asset_url }}') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-MediumItalic.ttf" | asset_url }}') format('truetype');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-SemiBold.ttf" | asset_url }}') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-SemiBoldItalic.ttf" | asset_url }}') format('truetype');
+    font-weight: 600;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-Bold.ttf" | asset_url }}') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-BoldItalic.ttf" | asset_url }}') format('truetype');
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-ExtraBold.ttf" | asset_url }}') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-ExtraBoldItalic.ttf" | asset_url }}') format('truetype');
+    font-weight: 800;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-Black.ttf" | asset_url }}') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('{{ "Poppins-BlackItalic.ttf" | asset_url }}') format('truetype');
+    font-weight: 900;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  /* Brand Typography & Color Palette Defaults */
+  :root {
+    /* Brand Font Families */
+    --font-family-agatho: 'Agatho', serif;
+    --font-family-agatho-caps: 'Agatho CAPS', serif;
+    --font-family-agatho-narrow: 'Agatho Narrow', serif;
+    --font-family-poppins: 'Poppins', sans-serif;
+    --font-family-requiem: 'Requiem Fine', serif;
+
+    /* Global Title & Body Defaults */
+    --font-heading--family: 'Agatho', serif;
+    --font-heading-family: 'Agatho', serif;
+    --font-body--family: 'Poppins', sans-serif;
+    --font-body-family: 'Poppins', sans-serif;
+    --font-paragraph--family: 'Poppins', sans-serif;
+
+    /* Brand Colors */
+    --color-brand-bg: #E8E8E8;
+    --color-brand-dark: #1B1713;
+    --color-brand-muted: #606161;
+  }
+
+  body {
+    font-family: var(--font-body--family);
+    color: var(--color-brand-dark);
+  }
+
+  h1, h2, h3, h4, h5, h6,
+  .heading, .title {
+    font-family: var(--font-heading--family);
+  }
+
+  .font-agatho { font-family: var(--font-family-agatho) !important; }
+  .font-agatho-caps { font-family: var(--font-family-agatho-caps) !important; }
+  .font-agatho-narrow { font-family: var(--font-family-agatho-narrow) !important; }
+  .font-poppins { font-family: var(--font-family-poppins) !important; }
+  .font-requiem { font-family: var(--font-family-requiem) !important; }
+</style>
