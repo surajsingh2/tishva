@@ -31,6 +31,7 @@
   <button
     class="theme-drawer__close-button"
     on:click="#{{ drawer_id }}/close"
+    onclick="var d = document.getElementById('{{ drawer_id }}') || document.querySelector('theme-drawer#{{ drawer_id }}'); if(d) { if (typeof d.close === 'function') d.close(); else d.removeAttribute('open'); }"
     type="button"
     aria-label="{{ 'actions.close' | t }}"
   >

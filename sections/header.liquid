@@ -132,20 +132,8 @@
     render 'search', style: search_style, class: search_class, display_style: section.settings.actions_display_style
   endcapture
 
-  # Skip drawer search under specific conditions:
-  # Always render if search_row is bottom
-  # Don't render when shop.customer_accounts_enabled is false and search_position is left and search_style is not none
-  assign skip_drawer_search = false
-  if shop.customer_accounts_enabled == false and section.settings.search_position == 'left' and search_style != 'none'
-    assign skip_drawer_search = true
-  endif
+  assign drawer_search = ''
 
-  if section.settings.search_row == 'bottom' or search_style != 'none' and skip_drawer_search == false
-    # Mobile search duplicate for when search is not in the right order for mobile layout
-    capture drawer_search
-      render 'search', class: 'search-action--hidden-on-menu', style: search_style, display_style: section.settings.actions_display_style
-    endcapture
-  endif
 
   assign show_language = section.settings.show_language
   if localization.available_languages.size <= 1
@@ -464,6 +452,17 @@
   {% endif %}
 </header-component>
 
+<!-- Fixed Side Quick Widget (LOG IN, CART, HELP) -->
+<div class="tishva-side-quick-widget">
+  {%- if customer -%}
+    <a href="{{ routes.account_url }}" class="tishva-side-quick-item">ACCOUNT</a>
+  {%- else -%}
+    <a href="{{ routes.account_login_url }}" class="tishva-side-quick-item">LOG IN</a>
+  {%- endif -%}
+  <a href="{{ routes.cart_url }}" class="tishva-side-quick-item" on:click="#cart-drawer/toggle">CART</a>
+  <a href="#care" class="tishva-side-quick-item">CARE</a>
+</div>
+
 <script
   src="{{ 'header.js' | asset_url }}"
   type="module"
@@ -474,6 +473,205 @@
     --header-height: 60px;
     --header-group-height: var(--header-height);
     --transparent-header-offset-boolean: 0; /* stylelint-disable-line declaration-property-value-disallowed-list */
+  }
+
+  #header-component {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    z-index: 9999 !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    border-bottom: none !important;
+    transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, color 0.3s ease !important;
+    color: #121212 !important;
+  }
+
+  .header__underlay {
+    display: none !important;
+  }
+
+  /* Default / PDP Page Header (Solid White Background & Dark Text) */
+  #header-component:not([transparent]),
+  body.template-product #header-component,
+  body[data-template='product'] #header-component {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #121212 !important;
+  }
+
+  #header-component:not([transparent]) :is(.header__row, .header__drawer, .tishva-menu-trigger, .search-action, .search-action button, a, span),
+  body.template-product #header-component :is(.header__row, .header__drawer, .tishva-menu-trigger, .search-action, .search-action button, a, span),
+  body[data-template='product'] #header-component :is(.header__row, .header__drawer, .tishva-menu-trigger, .search-action, .search-action button, a, span) {
+    color: #121212 !important;
+  }
+
+  #header-component:not([transparent]) svg,
+  body.template-product #header-component svg,
+  body[data-template='product'] #header-component svg {
+    fill: #121212 !important;
+    stroke: #121212 !important;
+  }
+
+  /* Natural Transparent Header at Top (First Fold) - Applies ONLY when transparent attribute is present AND NOT on PDP page */
+  #header-component[transparent]:not(.is-scrolled):not([data-sticky-state='active']):not(body.template-product #header-component):not(body[data-template='product'] #header-component) {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #ffffff !important;
+  }
+
+  #header-component[transparent]:not(.is-scrolled):not([data-sticky-state='active']):not(body.template-product #header-component):not(body[data-template='product'] #header-component) :is(.header__row, .header__drawer, .tishva-menu-trigger, .search-action, .search-action button, a, span):not(.tishva-fullscreen-menu *):not(.tishva-fullscreen-menu) {
+    color: #ffffff !important;
+  }
+
+  #header-component[transparent]:not(.is-scrolled):not([data-sticky-state='active']):not(body.template-product #header-component):not(body[data-template='product'] #header-component) svg:not(.tishva-fullscreen-menu *):not(.tishva-fullscreen-menu) {
+    fill: #ffffff !important;
+    stroke: #ffffff !important;
+  }
+
+  /* Scrolled / Sticky Header (Solid White Background) */
+  #header-component.is-scrolled,
+  #header-component[data-sticky-state='active'] {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+    color: #121212 !important;
+  }
+
+  #header-component.is-scrolled :is(.header__row, .header__drawer, .tishva-menu-trigger, .search-action, .search-action button, a, span),
+  #header-component[data-sticky-state='active'] :is(.header__row, .header__drawer, .tishva-menu-trigger, .search-action, .search-action button, a, span) {
+    color: #121212 !important;
+  }
+
+  #header-component.is-scrolled svg,
+  #header-component[data-sticky-state='active'] svg {
+    fill: #121212 !important;
+    stroke: #121212 !important;
+  }
+
+  /* Hide Account and Cart from Main Header Bar */
+  #header-component :is(.account-button, .action__cart, button[data-testid="cart-drawer-trigger"]) {
+    display: none !important;
+  }
+
+  /* Compact Header Row Padding */
+  /* Compact Header Height & Row Padding */
+  #header-component {
+    height: 52px !important;
+    min-height: 52px !important;
+  }
+
+  #header-component .header__row--top {
+    padding-block: 6px !important;
+    padding-inline: 40px !important;
+    height: 52px !important;
+    min-height: 52px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  #header-component .header__drawer {
+    min-height: auto !important;
+    height: auto !important;
+  }
+
+  /* Centered Logo & Right Search Bar Alignment */
+  #header-component .header__columns {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+
+  #header-component .header__column--left {
+    justify-content: flex-start !important;
+  }
+
+  #header-component .header__column--center {
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  #header-component .header__column--right {
+    justify-content: flex-end !important;
+  }
+
+  /* Logo Image 90px Width & Invert Styling */
+  #header-component .header-logo__image,
+  #header-component .header-logo img {
+    width: 90px !important;
+    max-width: 90px !important;
+    height: auto !important;
+    object-fit: contain !important;
+  }
+
+  #header-component.is-scrolled .header-logo img,
+  #header-component[data-sticky-state='active'] .header-logo img,
+  #header-component:not([transparent]) .header-logo img,
+  body.template-product #header-component .header-logo img,
+  body[data-template='product'] #header-component .header-logo img {
+    filter: invert(1) !important;
+  }
+
+  #header-component[transparent]:not(.is-scrolled):not([data-sticky-state='active']):not(body.template-product #header-component):not(body[data-template='product'] #header-component) .header-logo img {
+    filter: none !important;
+  }
+
+  /* Fixed Side Quick Widget (LOG IN, CART, HELP) */
+  .tishva-side-quick-widget {
+    position: fixed;
+    right: 40px;
+    top: 50vh;
+    transform: translateY(-50%);
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 18px;
+    pointer-events: auto;
+  }
+
+  .tishva-side-quick-item {
+    font-family: var(--font-body--family, sans-serif);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #ffffff;
+    text-decoration: none;
+    transition: opacity 0.2s ease, transform 0.2s ease, color 0.3s ease;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  }
+
+  .tishva-side-quick-item:hover {
+    opacity: 0.75;
+    transform: translateX(-3px);
+  }
+
+  body.is-scrolled .tishva-side-quick-item,
+  body.template-product .tishva-side-quick-item,
+  body[data-template='product'] .tishva-side-quick-item {
+    color: #121212;
+    text-shadow: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    #header-component .header__row--top {
+      padding-block: 12px !important;
+      padding-inline: 20px !important;
+    }
+    .tishva-side-quick-widget {
+      right: 18px;
+      gap: 14px;
+    }
+    .tishva-side-quick-item {
+      font-size: 0.72rem;
+    }
   }
 
   .header {

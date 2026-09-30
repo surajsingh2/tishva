@@ -1,0 +1,432 @@
+/* ==========================================================================
+   Shop The Look / Editorial Lookbook Section & Side Drawer
+   ========================================================================== */
+
+/* --- Section Container & Header --- */
+.shop-look-section {
+  position: relative;
+  padding-block: var(--padding-top, 60px) var(--padding-bottom, 60px);
+  background-color: var(--background-color, transparent);
+}
+
+.shop-look-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.shop-look-header__title {
+  font-family: var(--font-heading--family, 'Gilda Display', serif);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: #121212;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+}
+
+.shop-look-header__subtitle {
+  font-family: var(--font-body--family, sans-serif);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #555555;
+  margin: 0;
+}
+
+/* --- Staggered Editorial Gallery Grid --- */
+.shop-look-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  align-items: start;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding-inline: 20px;
+}
+
+.shop-look-column {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Column vertical offsets for staggered masonry layout */
+.shop-look-column--center {
+  margin-top: 60px;
+}
+
+.shop-look-column--right {
+  margin-top: 20px;
+}
+
+/* --- Look Card --- */
+.shop-look-card {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  cursor: pointer;
+  background-color: #f7f7f7;
+  border-radius: 0;
+}
+
+.shop-look-card__image-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.shop-look-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shop-look-card:hover .shop-look-card__image {
+  transform: scale(1.04);
+}
+
+/* Hover Badge Overlay */
+.shop-look-card__hover-badge {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  color: #121212;
+  font-family: var(--font-body--family, sans-serif);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.shop-look-card:hover .shop-look-card__hover-badge {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Aspect Ratio Utilities */
+.aspect-3-4 { aspect-ratio: 3 / 4; }
+.aspect-4-5 { aspect-ratio: 4 / 5; }
+.aspect-1-1 { aspect-ratio: 1 / 1; }
+.aspect-1-2 { aspect-ratio: 1 / 2; }
+.aspect-auto { aspect-ratio: auto; }
+
+/* ==========================================================================
+   Slide-In Side Drawer ("SHOP THE EDIT")
+   ========================================================================== */
+
+.shop-look-drawer-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(3px) !important;
+  -webkit-backdrop-filter: blur(3px) !important;
+  z-index: 9999999 !important;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease !important;
+  pointer-events: none;
+}
+
+.shop-look-drawer-backdrop[open] {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.shop-look-drawer {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  height: 100vh !important;
+  width: 100% !important;
+  max-width: 460px !important;
+  background: #f4f4f4 !important;
+  color: #121212 !important;
+  z-index: 10000000 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15) !important;
+  transform: translateX(100%) !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-sizing: border-box !important;
+}
+
+.shop-look-drawer-backdrop[open] .shop-look-drawer {
+  transform: translateX(0) !important;
+}
+
+/* Top Bar */
+.shop-look-drawer__top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px 16px 28px;
+  background: #f4f4f4;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+}
+
+.shop-look-drawer__title {
+  font-family: var(--font-heading--family, 'Gilda Display', serif);
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0;
+  color: #121212;
+}
+
+.shop-look-drawer__close-btn {
+  background: transparent;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: #121212;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.shop-look-drawer__close-btn:hover {
+  transform: scale(1.15);
+}
+
+.shop-look-drawer__close-btn svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+/* Scrollable Drawer Body */
+.shop-look-drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px 40px 28px;
+  scrollbar-width: thin;
+}
+
+/* Feature Look Banner Card inside Drawer */
+.shop-look-drawer__feature-card {
+  position: relative;
+  width: 100%;
+  margin-bottom: 28px;
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.shop-look-drawer__feature-img-wrapper {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #eaeaea;
+}
+
+.shop-look-drawer__feature-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.shop-look-drawer__stack-cta-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  background: #ffffff;
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  font-family: var(--font-body--family, sans-serif);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #121212;
+  text-align: right;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.shop-look-drawer__stack-cta-btn:hover {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.shop-look-drawer__stack-cta-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Products Stack List */
+.shop-look-drawer__products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Product Item Row */
+.shop-look-drawer__product-row {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  background: #ffffff;
+  padding: 14px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.shop-look-drawer__product-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* Thumbnail with Quick Add + Badge */
+.shop-look-drawer__thumb-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+  background: #f8f8f8;
+  overflow: hidden;
+}
+
+.shop-look-drawer__thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Quick Add + Icon on Top-Right of Thumbnail */
+.shop-look-drawer__quick-add-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  color: #121212;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  padding: 0;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  z-index: 2;
+}
+
+.shop-look-drawer__quick-add-btn:hover {
+  transform: scale(1.2);
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.shop-look-drawer__quick-add-btn.is-loading {
+  animation: spinAdd 0.8s linear infinite;
+}
+
+@keyframes spinAdd {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Product Info Stack */
+.shop-look-drawer__product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.shop-look-drawer__product-title {
+  font-family: var(--font-body--family, sans-serif);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #121212;
+  margin: 0;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shop-look-drawer__product-title:hover {
+  color: #555555;
+}
+
+.shop-look-drawer__product-specs {
+  font-family: var(--font-body--family, sans-serif);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: #666666;
+  margin: 0;
+}
+
+.shop-look-drawer__product-cat {
+  font-family: var(--font-body--family, sans-serif);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #888888;
+  margin: 2px 0 0 0;
+}
+
+.shop-look-drawer__product-price {
+  font-family: var(--font-body--family, sans-serif);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #121212;
+  margin-top: 4px;
+}
+
+/* Responsive Media Queries */
+@media screen and (max-width: 989px) {
+  .shop-look-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .shop-look-column--center,
+  .shop-look-column--right {
+    margin-top: 0;
+  }
+
+  .shop-look-drawer {
+    max-width: 100vw !important;
+  }
+}
+
+@media screen and (max-width: 549px) {
+  .shop-look-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}

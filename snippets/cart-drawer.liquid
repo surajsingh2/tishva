@@ -43,6 +43,7 @@
   <theme-drawer
     id="cart-drawer"
     data-skip-node-update
+    onclick="if(event.target === this) { if(typeof this.close === 'function') this.close(); else this.removeAttribute('open'); }"
   >
     <dialog
       ref="panel"
@@ -67,6 +68,7 @@
             <div class="theme-drawer__header">
               <button
                 on:click="#cart-drawer/close"
+                onclick="var d = document.getElementById('cart-drawer') || document.querySelector('theme-drawer#cart-drawer'); if(d) { if (typeof d.close === 'function') d.close(); else d.removeAttribute('open'); }"
                 class="theme-drawer__close-button cart-drawer__close-button--empty"
                 type="button"
                 aria-label="{{ 'actions.close' | t }}"

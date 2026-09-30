@@ -185,4 +185,60 @@
       background-color: color-mix(in srgb, var(--contrast-color) 6%, var(--color-background));
     }
   }
+
+  /* ── TISHVA CART DRAWER OVERRIDES ── */
+  /* Prevent Page Shrinking / Squeezing when drawer opens */
+  .page-wrapper--drawer-open,
+  body.page-wrapper--drawer-open,
+  html:has(#cart-drawer[open]) .page-wrapper {
+    margin-right: 0 !important;
+    translate: 0 !important;
+    transform: none !important;
+  }
+
+  /* Cart Drawer Panel: Solid White Background, Floating Position & Elevation Shadow */
+  #cart-drawer .theme-drawer__dialog {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #121212 !important;
+    box-shadow: -12px 0 40px rgba(0, 0, 0, 0.16) !important;
+    border-left: 1px solid #eaeaea !important;
+  }
+
+  #cart-drawer .cart-drawer__content,
+  #cart-drawer .cart-drawer__summary,
+  #cart-drawer .cart-drawer__inner,
+  #cart-drawer .theme-drawer__header,
+  #cart-drawer .cart-drawer__items {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #121212 !important;
+  }
+
+  #cart-drawer .cart-drawer__summary {
+    mask-image: none !important;
+    border-top: 1px solid #f0f0f0 !important;
+  }
+
+  /* Dark Backdrop Overlay on page */
+  #cart-drawer[open]::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: calc(var(--layer-sticky, 100) + 10);
+    pointer-events: auto;
+  }
+
+  /* Ensure close button is crisp and dark */
+  #cart-drawer .theme-drawer__close-button {
+    background-color: #f5f5f5 !important;
+    color: #121212 !important;
+    border: 1px solid #e0e0e0 !important;
+  }
 {% endstylesheet %}

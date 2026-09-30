@@ -46,7 +46,7 @@
         }
       },
       "settings": {
-        "logo_position": "left",
+        "logo_position": "center",
         "menu_position": "center",
         "menu_row": "top",
         "show_search": true,
@@ -65,8 +65,8 @@
         "divider_width": 0,
         "divider_size": "page-width",
         "border_width": 0,
-        "background_color_top": "{{ settings.color_palette.color2 }}",
-        "enable_transparent_header_home": false,
+        "background_color_top": "transparent",
+        "enable_transparent_header_home": true,
         "enable_transparent_header_product": false,
         "enable_transparent_header_collection": false
       }

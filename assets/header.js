@@ -221,10 +221,34 @@ class HeaderComponent extends Component {
     this.#lastScrollTop = scrollTop;
   };
 
+  #handleScrollState = () => {
+    const pageWrapper = document.querySelector('.page-wrapper');
+    const pageScrollTop = pageWrapper ? pageWrapper.scrollTop : 0;
+    const windowScrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+    const scrollTop = Math.max(pageScrollTop, windowScrollTop);
+
+    if (scrollTop > 20) {
+      this.classList.add('is-scrolled');
+      document.body.classList.add('is-scrolled');
+      this.dataset.stickyState = 'active';
+    } else {
+      this.classList.remove('is-scrolled');
+      document.body.classList.remove('is-scrolled');
+      this.dataset.stickyState = 'inactive';
+    }
+  };
+
   connectedCallback() {
     super.connectedCallback();
     this.#resizeObserver.observe(this);
     this.addEventListener('overflowMinimum', this.#handleOverflowMinimum);
+
+    window.addEventListener('scroll', this.#handleScrollState, { passive: true });
+    const pageWrapper = document.querySelector('.page-wrapper');
+    if (pageWrapper) {
+      pageWrapper.addEventListener('scroll', this.#handleScrollState, { passive: true });
+    }
+    this.#handleScrollState();
 
     const stickyMode = this.getAttribute('sticky');
     if (stickyMode) {
@@ -241,6 +265,7 @@ class HeaderComponent extends Component {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    window.removeEventListener('scroll', this.#handleScrollState);
     this.#resizeObserver.disconnect();
     this.#intersectionObserver?.disconnect();
     this.removeEventListener('overflowMinimum', this.#handleOverflowMinimum);

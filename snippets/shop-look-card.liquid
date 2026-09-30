@@ -1,0 +1,111 @@
+{% doc %}
+  Renders an individual look card in the Shop The Look gallery grid with pre-rendered JSON payload for instant drawer hydration.
+
+  @param {block} block - The block object
+  @param {section} [section] - The section object
+{% enddoc %}
+
+{% assign look_title = block.settings.look_title %}
+{% if look_title == blank and section != blank and section.settings.drawer_heading != blank %}
+  {% assign look_title = section.settings.drawer_heading %}
+{% endif %}
+{% if look_title == blank %}
+  {% assign look_title = 'SHOP THE EDIT' %}
+{% endif %}
+
+{% assign look_subtitle = block.settings.look_subtitle %}
+{% if look_subtitle == blank and section != blank and section.settings.drawer_subtext != blank %}
+  {% assign look_subtitle = section.settings.drawer_subtext %}
+{% endif %}
+{% if look_subtitle == blank %}
+  {% assign look_subtitle = 'SHOP THE WHOLE STACK.' %}
+{% endif %}
+
+{% assign look_img_url = '' %}
+{% if block.settings.image != blank %}
+  {% assign look_img_url = block.settings.image | image_url: width: 1000 %}
+{% endif %}
+
+<div
+  class="shop-look-card aspect-{{ block.settings.aspect_ratio | default: '3-4' }}"
+  data-shop-look-trigger
+>
+  <div class="shop-look-card__image-wrapper">
+    {% if block.settings.image != blank %}
+      {{
+        block.settings.image
+        | image_url: width: 1200
+        | image_tag:
+          loading: 'lazy',
+          class: 'shop-look-card__image',
+          alt: look_title
+      }}
+    {% else %}
+      {{ 'hero-apparel-1' | placeholder_svg_tag: 'shop-look-card__image' }}
+    {% endif %}
+  </div>
+
+  <div class="shop-look-card__hover-badge">
+    SHOP THE EDIT
+  </div>
+
+  <!-- Pre-rendered Fail-Safe Look JSON Payload -->
+  <script type="application/json">
+    {
+      "title": {{ look_title | json }},
+      "subtitle": {{ look_subtitle | json }},
+      "image": {{ look_img_url | json }},
+      "products": [
+        {% assign first_prod = true %}
+        {% for i in (1..6) %}
+          {% assign prod_key = 'product_' | append: i %}
+          {% assign spec_key = 'custom_specs_' | append: i %}
+          {% assign prod = block.settings[prod_key] %}
+          {% assign spec_override = block.settings[spec_key] %}
+          {% if prod != blank %}
+            {% unless first_prod %},{% endunless %}
+            {% assign prod_price = prod.price | money %}
+            {% assign prod_cat = prod.type %}
+            {% if prod_cat == blank and prod.collections.first != blank %}
+              {% assign prod_cat = prod.collections.first.title %}
+            {% endif %}
+            {% if prod_cat == blank %}
+              {% assign prod_cat = 'JEWELRY' %}
+            {% endif %}
+            {% assign prod_cat = prod_cat | upcase %}
+
+            {% assign prod_specs = spec_override %}
+            {% if prod_specs == blank and prod.metafields.custom.specs != blank %}
+              {% assign prod_specs = prod.metafields.custom.specs %}
+            {% endif %}
+            {% if prod_specs == blank and prod.description != blank %}
+              {% assign prod_specs = prod.description | strip_html | truncate: 70 %}
+            {% endif %}
+
+            {% assign prod_img = '' %}
+            {% if prod.featured_image != blank %}
+              {% assign prod_img = prod.featured_image | image_url: width: 300 %}
+            {% endif %}
+
+            {% assign variant_id = '' %}
+            {% if prod.first_available_variant != blank %}
+              {% assign variant_id = prod.first_available_variant.id %}
+            {% endif %}
+            {
+              "id": {{ prod.id | json }},
+              "title": {{ prod.title | json }},
+              "url": {{ prod.url | json }},
+              "price": {{ prod_price | json }},
+              "category": {{ prod_cat | json }},
+              "specs": {{ prod_specs | json }},
+              "image": {{ prod_img | json }},
+              "variant_id": {{ variant_id | json }},
+              "available": {{ prod.available | json }}
+            }
+            {% assign first_prod = false %}
+          {% endif %}
+        {% endfor %}
+      ]
+    }
+  </script>
+</div>

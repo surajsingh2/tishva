@@ -1,0 +1,324 @@
+{% doc %}
+  Renders an editorial "Shop The Look / Shop The Stack" gallery grid with an interactive slide-in side drawer.
+{% enddoc %}
+
+<script
+  src="{{ 'shop-look-drawer.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
+
+{{ 'shop-look-drawer.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  #ShopLook-{{ section.id }} {
+    --padding-top: {{ section.settings.padding_top | default: 60 }}px;
+    --padding-bottom: {{ section.settings.padding_bottom | default: 60 }}px;
+    {% if section.settings.background_color != blank %}
+      --background-color: {{ section.settings.background_color }};
+    {% endif %}
+  }
+{% endstyle %}
+
+<div id="ShopLook-{{ section.id }}" class="shop-look-section">
+  <div class="page-width">
+    {% if section.settings.title != blank or section.settings.subtitle != blank %}
+      <div class="shop-look-header">
+        {% if section.settings.title != blank %}
+          <h2 class="shop-look-header__title">{{ section.settings.title }}</h2>
+        {% endif %}
+        {% if section.settings.subtitle != blank %}
+          <p class="shop-look-header__subtitle">{{ section.settings.subtitle }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <!-- 3-Column Staggered Editorial Collage Gallery Grid -->
+    <div class="shop-look-grid">
+      <!-- Column 1 (Left) -->
+      <div class="shop-look-column shop-look-column--left">
+        {% for block in section.blocks %}
+          {% assign col_mod = forloop.index0 | modulo: 3 %}
+          {% if col_mod == 0 %}
+            <div class="shop-look-card-item" {{ block.shopify_attributes }}>
+              {% render 'shop-look-card', block: block, section: section %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Column 2 (Center - Offset) -->
+      <div class="shop-look-column shop-look-column--center">
+        {% for block in section.blocks %}
+          {% assign col_mod = forloop.index0 | modulo: 3 %}
+          {% if col_mod == 1 %}
+            <div class="shop-look-card-item" {{ block.shopify_attributes }}>
+              {% render 'shop-look-card', block: block, section: section %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Column 3 (Right) -->
+      <div class="shop-look-column shop-look-column--right">
+        {% for block in section.blocks %}
+          {% assign col_mod = forloop.index0 | modulo: 3 %}
+          {% if col_mod == 2 %}
+            <div class="shop-look-card-item" {{ block.shopify_attributes }}>
+              {% render 'shop-look-card', block: block, section: section %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide-In Side Drawer ("SHOP THE EDIT") Component -->
+  <shop-look-drawer>
+    <div class="shop-look-drawer-backdrop">
+      <div class="shop-look-drawer">
+        <div class="shop-look-drawer__top-bar">
+          <h3 class="shop-look-drawer__title">{{ section.settings.drawer_heading | default: 'SHOP THE EDIT' }}</h3>
+          <button type="button" class="shop-look-drawer__close-btn" aria-label="Close drawer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <div class="shop-look-drawer__body">
+          <div class="shop-look-drawer__feature-card">
+            <div class="shop-look-drawer__feature-img-wrapper">
+              <img src="" alt="Look Feature" class="shop-look-drawer__feature-img" />
+            </div>
+            <button type="button" class="shop-look-drawer__stack-cta-btn">
+              {{ section.settings.drawer_subtext | default: 'SHOP THE WHOLE STACK.' }}
+            </button>
+          </div>
+
+          <div class="shop-look-drawer__products-list">
+            <!-- Hydrated dynamically by shop-look-drawer.js -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </shop-look-drawer>
+</div>
+
+{% schema %}
+{
+  "name": "Shop The Look Drawer",
+  "tag": "section",
+  "class": "section-shop-the-look",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Heading",
+      "default": "THE NEW"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Section Subheading",
+      "default": "SHOP THE STACK"
+    },
+    {
+      "type": "text",
+      "id": "drawer_heading",
+      "label": "Side Drawer Heading",
+      "default": "SHOP THE EDIT"
+    },
+    {
+      "type": "text",
+      "id": "drawer_subtext",
+      "label": "Drawer Batch Add CTA Text",
+      "default": "SHOP THE WHOLE STACK."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "look",
+      "name": "Look Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Look Feature Photo"
+        },
+        {
+          "type": "select",
+          "id": "aspect_ratio",
+          "label": "Card Aspect Ratio",
+          "options": [
+            { "value": "3-4", "label": "3:4 Portrait" },
+            { "value": "4-5", "label": "4:5 Portrait" },
+            { "value": "1-1", "label": "1:1 Square" },
+            { "value": "1-2", "label": "1:2 Tall" },
+            { "value": "auto", "label": "Auto / Original" }
+          ],
+          "default": "3-4"
+        },
+        {
+          "type": "text",
+          "id": "look_title",
+          "label": "Look Title Override",
+          "info": "Overrides side drawer title (defaults to section drawer title)."
+        },
+        {
+          "type": "text",
+          "id": "look_subtitle",
+          "label": "Look CTA Override",
+          "info": "Overrides batch stack CTA text (defaults to section stack CTA)."
+        },
+        {
+          "type": "header",
+          "content": "Tagged Product 1"
+        },
+        {
+          "type": "product",
+          "id": "product_1",
+          "label": "Product 1"
+        },
+        {
+          "type": "text",
+          "id": "custom_specs_1",
+          "label": "Product 1 Specs Override",
+          "info": "e.g. 18K Gold, 3ct Net CVD Diamond, Invisible setting."
+        },
+        {
+          "type": "header",
+          "content": "Tagged Product 2"
+        },
+        {
+          "type": "product",
+          "id": "product_2",
+          "label": "Product 2"
+        },
+        {
+          "type": "text",
+          "id": "custom_specs_2",
+          "label": "Product 2 Specs Override"
+        },
+        {
+          "type": "header",
+          "content": "Tagged Product 3"
+        },
+        {
+          "type": "product",
+          "id": "product_3",
+          "label": "Product 3"
+        },
+        {
+          "type": "text",
+          "id": "custom_specs_3",
+          "label": "Product 3 Specs Override"
+        },
+        {
+          "type": "header",
+          "content": "Tagged Product 4"
+        },
+        {
+          "type": "product",
+          "id": "product_4",
+          "label": "Product 4"
+        },
+        {
+          "type": "text",
+          "id": "custom_specs_4",
+          "label": "Product 4 Specs Override"
+        },
+        {
+          "type": "header",
+          "content": "Tagged Product 5"
+        },
+        {
+          "type": "product",
+          "id": "product_5",
+          "label": "Product 5"
+        },
+        {
+          "type": "text",
+          "id": "custom_specs_5",
+          "label": "Product 5 Specs Override"
+        },
+        {
+          "type": "header",
+          "content": "Tagged Product 6"
+        },
+        {
+          "type": "product",
+          "id": "product_6",
+          "label": "Product 6"
+        },
+        {
+          "type": "text",
+          "id": "custom_specs_6",
+          "label": "Product 6 Specs Override"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop The Look Drawer",
+      "category": "t:categories.collections",
+      "blocks": [
+        {
+          "type": "look",
+          "settings": {
+            "aspect_ratio": "3-4"
+          }
+        },
+        {
+          "type": "look",
+          "settings": {
+            "aspect_ratio": "1-2"
+          }
+        },
+        {
+          "type": "look",
+          "settings": {
+            "aspect_ratio": "1-1"
+          }
+        },
+        {
+          "type": "look",
+          "settings": {
+            "aspect_ratio": "3-4"
+          }
+        },
+        {
+          "type": "look",
+          "settings": {
+            "aspect_ratio": "4-5"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

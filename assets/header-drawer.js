@@ -56,9 +56,13 @@ class HeaderDrawer extends Component {
 
   /**
    * Toggle the main menu drawer
+   * @param {Event} [event]
    */
-  toggle() {
-    return this.isOpen ? this.close() : this.open();
+  toggle(event) {
+    if (event && typeof event.preventDefault === 'function') {
+      event.preventDefault();
+    }
+    return this.isOpen ? this.close() : this.open(undefined, event);
   }
 
   /**
@@ -67,19 +71,24 @@ class HeaderDrawer extends Component {
    * @param {Event} [event]
    */
   open(target, event) {
+    if (event && typeof event.preventDefault === 'function') {
+      event.preventDefault();
+    }
     const details = this.#getDetailsElement(event);
     const summary = details.querySelector('summary');
 
     if (!summary) return;
 
+    details.setAttribute('open', '');
     summary.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('overflow-hidden');
 
     this.preventInitialAccordionAnimations(details);
     requestAnimationFrame(() => {
       details.classList.add('menu-open');
 
       if (target) {
-        this.refs.menuDrawer.classList.add('menu-drawer--has-submenu-opened');
+        this.refs.menuDrawer?.classList.add('menu-drawer--has-submenu-opened');
       }
 
       // Wait for the drawer animation to complete before trapping focus
@@ -115,26 +124,19 @@ class HeaderDrawer extends Component {
 
     summary.setAttribute('aria-expanded', 'false');
     details.classList.remove('menu-open');
-    this.refs.menuDrawer.classList.remove('menu-drawer--has-submenu-opened');
+    document.body.classList.remove('overflow-hidden');
+    if (this.refs.menuDrawer) {
+      this.refs.menuDrawer.classList.remove('menu-drawer--has-submenu-opened');
+    }
 
-    // Wait for the .menu-drawer element's transition, not the entire details subtree
-    // This avoids waiting for child accordion/resource-card animations which can cause issues on Firefox
-    const drawer = details.querySelector('.menu-drawer, .menu-drawer__submenu');
-
-    onAnimationEnd(
-      drawer || details,
-      () => {
-        reset(details);
-        if (details === this.refs.details) {
-          removeTrapFocus();
-          const openDetails = this.querySelectorAll('details[open]:not(accordion-custom > details)');
-          openDetails.forEach(reset);
-        } else {
-          trapFocus(this.refs.details);
-        }
-      },
-      { subtree: false }
-    );
+    reset(details);
+    if (details === this.refs.details) {
+      removeTrapFocus();
+      const openDetails = this.querySelectorAll('details[open]:not(accordion-custom > details)');
+      openDetails.forEach(reset);
+    } else {
+      trapFocus(this.refs.details);
+    }
   }
 
   /**

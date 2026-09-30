@@ -68,10 +68,10 @@
             "heading_m7KmQQ": {
               "type": "text",
               "settings": {
-                "text": "<h1>{{ closest.product.metafields.custom.viewing_title.value }}</h1>",
+                "text": "<h1>{{ closest.product.title }}</h1>",
                 "width": "fit-content",
                 "max_width": "normal",
-                "alignment": "center",
+                "alignment": "left",
                 "type_preset": "h3",
                 "font": "var(--font-primary--family)",
                 "font_size": "var(--font-size--heading-md)",
@@ -82,7 +82,7 @@
                 "background": false,
                 "background_color": "#00000026",
                 "corner_radius": 0,
-                "padding-block-start": 50,
+                "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
@@ -93,17 +93,17 @@
               "type": "price",
               "settings": {
                 "show_sale_price_first": true,
-                "show_installments": true,
-                "show_tax_info": true,
+                "show_installments": false,
+                "show_tax_info": false,
                 "type_preset": "h5",
                 "width": "100%",
                 "alignment": "left",
                 "font": "var(--font-body--family)",
-                "font_size": "1rem",
+                "font_size": "1.2rem",
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
-                "padding-block-start": 0,
+                "padding-block-start": 12,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
@@ -114,13 +114,14 @@
               "type": "custom-liquid",
               "name": "t:names.custom_liquid",
               "settings": {
-                "custom_liquid": "<span style=\"font-size: 16px; text-transform: none; position: relative; top: -20px;\">\n  Free shipping. No hidden charges.\n</span>"
+                "custom_liquid": "<div class=\"pdp-cta-row\"><button type=\"button\" class=\"pdp-cta-item pdp-cta-item--add\" onclick=\"handlePDPAddToCart(event)\">ADD TO BAG</button><button type=\"button\" class=\"pdp-cta-item pdp-cta-item--buy\" onclick=\"handlePDPBuyNow(event)\">BUY NOW</button><a href=\"https://wa.me/919311549955?text=Hello!%20I'd%20like%20to%20customise%20this%20product.\" class=\"pdp-cta-item pdp-cta-item--customise\" target=\"_blank\">CUSTOMISE</a></div><script>function handlePDPAddToCart(e){if(e)e.preventDefault();var form=document.querySelector('form[action*=\"/cart/add\"]');if(!form)return;var submitBtn=form.querySelector('button[type=\"submit\"]')||form.querySelector('[data-testid=\"standalone-add-to-cart\"]');if(submitBtn){submitBtn.click();}else{var formData=new FormData(form);fetch('/cart/add.js',{method:'POST',body:formData}).then(function(){window.location.href='/cart';});}}function handlePDPBuyNow(e){if(e)e.preventDefault();var form=document.querySelector('form[action*=\"/cart/add\"]');if(!form)return;var formData=new FormData(form);fetch('/cart/add.js',{method:'POST',body:formData}).then(function(){window.location.href='/checkout';}).catch(function(){form.submit();});}</script>"
               },
               "blocks": {}
             },
             "accordion_3j7TTq": {
               "type": "accordion",
               "name": "t:names.accordion",
+              "disabled": true,
               "settings": {
                 "icon": "caret",
                 "dividers": true,
@@ -225,6 +226,7 @@
             },
             "sa_variants_product_swatch_block_7WhifG": {
               "type": "shopify://apps/sa-variants/blocks/product-swatch-block/ff68b20f-8c8f-491e-92bf-3e5b8f17ef88",
+              "disabled": true,
               "settings": {}
             },
             "buy_buttons_eYQEYi": {
@@ -265,6 +267,7 @@
             "button_gC9m8P": {
               "type": "button",
               "name": "Whatsapp",
+              "disabled": true,
               "settings": {
                 "label": "Chat with Us",
                 "link": "https://wa.me/919311549955?text=Hello!%20I'm%20interested%20in%20your%20products.",
@@ -279,11 +282,13 @@
             },
             "essential_upsell_app_block_ymYMWk": {
               "type": "shopify://apps/essential-upsell/blocks/app-block/50627fd9-24fd-4250-8614-accc12826d80",
+              "disabled": true,
               "settings": {}
             },
             "custom_liquid_dhNMBm": {
               "type": "custom-liquid",
               "name": "t:names.custom_liquid",
+              "disabled": true,
               "settings": {
                 "custom_liquid": "<style>\n  .info-section {\n    display: flex;\n    justify-content: space-around;\n    gap: 40px;\n    flex-wrap: wrap;\n    padding: 20px 0;\n  }\n\n  .info-box {\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    text-align: center;\n    width: auto;\n  }\n\n  .info-box img {\n    width: 20px;\n    height: 20px;\n    object-fit: contain;\n    filter: brightness(0); /* Make icons pure black */\n    margin-bottom: 6px;\n  }\n\n  .info-box p {\n    font-size: 13px;\n    font-weight: 500;\n    margin: 0;\n    color: #333;\n    white-space: nowrap;\n  }\n\n  @media (max-width: 600px) {\n    .info-section {\n      gap: 20px;\n    }\n\n    .info-box img {\n      width: 18px;\n      height: 18px;\n    }\n\n    .info-box p {\n      font-size: 12px;\n    }\n  }\n</style>\n\n<div class=\"info-section\">\n  <div class=\"info-box\">\n    <img src=\"https://cdn-icons-png.flaticon.com/512/11659/11659947.png\" alt=\"Shipping Icon\" />\n    <p>14-Day Delivery</p>\n  </div>\n  <div class=\"info-box\">\n    <img src=\"https://cdn-icons-png.flaticon.com/512/14644/14644461.png\" alt=\"Returns Icon\" />\n    <p>7-Day Returns</p>\n  </div>\n  \n<div class=\"info-box\">\n    <img src=\"https://cdn.shopify.com/s/files/1/0938/8543/2179/files/BIS-Hallmark-Black.png?v=1755502484\" />\n    <p>BIS Certified</p>\n  </div>\n</div>"
               },
@@ -480,8 +485,7 @@
         }
       },
       "custom_css": [
-        ".xh8yej3:not(#\\#):not(#\\#):not(#\\#):not(#\\#) {object-fit: contain; width: 100%;}",
-        "@media screen and (min-width: 750px) {.media-gallery--carousel {padding-left: 30px !important; }}"
+        ".xh8yej3:not(#\\#):not(#\\#):not(#\\#):not(#\\#) {object-fit: contain; width: 100%;}"
       ],
       "settings": {
         "content_width": "content-center-aligned",

@@ -50,15 +50,91 @@
   endif
 
   assign layout = section.settings.layout_style | default: 'style_1'
+  assign enable_custom_pos = section.settings.enable_custom_positions
+  if layout == 'custom'
+    assign enable_custom_pos = true
+  endif
+
+  assign show_img_1 = section.settings.show_image_1 | default: true, allow_false: true
+  assign show_img_2 = section.settings.show_image_2 | default: true, allow_false: true
+  assign show_img_3 = section.settings.show_image_3 | default: true, allow_false: true
 %}
+
+{% capture title_content %}
+  {% assign title_render_mode = section.settings.title_render_type | default: 'text' %}
+  {% assign title_alt_text = section.settings.title_image_alt %}
+  {% if title_alt_text == blank %}
+    {% assign title_alt_text = display_title %}
+  {% endif %}
+  <div class="editorial-banner__title-wrapper">
+    {% if title_render_mode == 'svg_image' and section.settings.title_image != blank %}
+      <div class="editorial-banner__title-graphic">
+        {{ section.settings.title_image | image_url: width: 1400 | image_tag: loading: 'eager', class: 'editorial-banner__title-img', alt: title_alt_text }}
+      </div>
+    {% else %}
+      <h2 class="editorial-banner__title editorial-banner__title--main">
+        {{ display_title }}
+      </h2>
+    {% endif %}
+  </div>
+{% endcapture %}
 
 <div
   id="EditorialBanner-{{ section.id }}"
-  class="editorial-banner editorial-banner--{{ layout }}"
+  class="editorial-banner editorial-banner--{{ layout }}{% if enable_custom_pos %} editorial-banner--custom-canvas{% endif %} editorial-banner--mob-{{ section.settings.mobile_layout | default: 'stack' }}"
   style="
     --padding-top: {{ section.settings.padding_top }}px;
     --padding-bottom: {{ section.settings.padding_bottom }}px;
     {% if section.settings.background_color != blank %}background-color: {{ section.settings.background_color }};{% endif %}
+    --canvas-min-height: {{ section.settings.canvas_min_height | default: 600 }}px;
+
+    --img1-width: {{ section.settings.image_1_width | default: 35 }}%;
+    --img1-x: {{ section.settings.image_1_pos_x | default: 0 }}%;
+    --img1-y: {{ section.settings.image_1_pos_y | default: 0 }}px;
+    --img1-z: {{ section.settings.image_1_z_index | default: 2 }};
+    --img1-rotate: {{ section.settings.image_1_rotation | default: 0 }}deg;
+    --img1-aspect: {% if section.settings.image_1_aspect_ratio != 'auto' %}{{ section.settings.image_1_aspect_ratio }}{% else %}auto{% endif %};
+
+    --img2-width: {{ section.settings.image_2_width | default: 25 }}%;
+    --img2-x: {{ section.settings.image_2_pos_x | default: 60 }}%;
+    --img2-y: {{ section.settings.image_2_pos_y | default: 60 }}px;
+    --img2-z: {{ section.settings.image_2_z_index | default: 3 }};
+    --img2-rotate: {{ section.settings.image_2_rotation | default: 0 }}deg;
+    --img2-aspect: {% if section.settings.image_2_aspect_ratio != 'auto' %}{{ section.settings.image_2_aspect_ratio }}{% else %}auto{% endif %};
+
+    --img3-width: {{ section.settings.image_3_width | default: 20 }}%;
+    --img3-x: {{ section.settings.image_3_pos_x | default: 74 }}%;
+    --img3-y: {{ section.settings.image_3_pos_y | default: -40 }}px;
+    --img3-z: {{ section.settings.image_3_z_index | default: 1 }};
+    --img3-rotate: {{ section.settings.image_3_rotation | default: 0 }}deg;
+    --img3-aspect: {% if section.settings.image_3_aspect_ratio != 'auto' %}{{ section.settings.image_3_aspect_ratio }}{% else %}auto{% endif %};
+
+    --content-x: {{ section.settings.content_pos_x | default: 0 }}%;
+    --content-y: {{ section.settings.content_pos_y | default: 0 }}px;
+    --content-z: {{ section.settings.content_z_index | default: 5 }};
+    --title-font-size: {{ section.settings.title_font_size | default: 56 }}px;
+    --title-text-transform: {{ section.settings.title_text_transform | default: 'none' }};
+    --title-graphic-width: {{ section.settings.title_graphic_width | default: 100 }}%;
+    --title-x: {{ section.settings.title_pos_x | default: 0 }}%;
+    --title-y: {{ section.settings.title_pos_y | default: 0 }}px;
+    --title-z: {{ section.settings.title_z_index | default: 5 }};
+    --title-rotate: {{ section.settings.title_rotation | default: 0 }}deg;
+
+    --tagline-font-size: {{ section.settings.tagline_font_size | default: 14 }}px;
+    --tagline-text-transform: {{ section.settings.tagline_text_transform | default: 'uppercase' }};
+    {% if section.settings.tagline_color != blank %}--tagline-color: {{ section.settings.tagline_color }};{% endif %}
+    --tagline-x: {{ section.settings.tagline_pos_x | default: 0 }}%;
+    --tagline-y: {{ section.settings.tagline_pos_y | default: 0 }}px;
+    --tagline-z: {{ section.settings.tagline_z_index | default: 5 }};
+    --tagline-rotate: {{ section.settings.tagline_rotation | default: 0 }}deg;
+
+    --divider-width: {{ section.settings.divider_width | default: 1 }}px;
+    --divider-height: {{ section.settings.divider_height | default: 50 }}px;
+    {% if section.settings.divider_color != blank %}--divider-color: {{ section.settings.divider_color }};{% endif %}
+    --divider-x: {{ section.settings.divider_pos_x | default: 0 }}%;
+    --divider-y: {{ section.settings.divider_pos_y | default: 0 }}px;
+    --divider-z: {{ section.settings.divider_z_index | default: 5 }};
+    --divider-rotate: {{ section.settings.divider_rotation | default: 0 }}deg;
   "
 >
   <div class="editorial-banner__container page-width">
@@ -66,56 +142,31 @@
       <a href="{{ display_link }}" class="editorial-banner__link-overlay" aria-label="{{ display_title | escape }}"></a>
     {% endif %}
 
-    {% if layout == 'style_3' %}
-      <!-- Layout Style 3 (e.g. IN SCRUTINY) Header -->
+    {% if layout == 'style_3' and enable_custom_pos == false %}
+      <!-- Layout Style 3 Header -->
       <div class="editorial-banner__top-header">
-        <h2 class="editorial-banner__title editorial-banner__title--top">
-          {{ display_title }}
-        </h2>
+        {{ title_content }}
       </div>
     {% endif %}
 
     <div class="editorial-banner__grid editorial-banner__grid--{{ layout }}">
-      <!-- Primary Left Image -->
-      <div class="editorial-banner__media-block editorial-banner__media-block--primary">
-        {% if img_1 != blank %}
-          {{ img_1 | image_url: width: 1400 | image_tag: loading: 'lazy', class: 'editorial-banner__image', alt: display_title }}
-        {% else %}
-          {{ 'collection-1' | placeholder_svg_tag: 'editorial-banner__placeholder' }}
-        {% endif %}
-      </div>
+      <!-- Primary Image Block -->
+      {% if show_img_1 %}
+        <div class="editorial-banner__media-block editorial-banner__media-block--primary">
+          <div class="editorial-banner__image-wrapper editorial-banner__image-wrapper--img1">
+            {% if img_1 != blank %}
+              {{ img_1 | image_url: width: 1400 | image_tag: loading: 'lazy', class: 'editorial-banner__image', alt: display_title }}
+            {% else %}
+              {{ 'collection-1' | placeholder_svg_tag: 'editorial-banner__placeholder' }}
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
 
       <!-- Center / Content Column -->
       <div class="editorial-banner__content-block">
-        {% if layout != 'style_3' %}
-          {% liquid
-            assign is_scandalicious_split = false
-            if display_title contains '|'
-              assign is_scandalicious_split = true
-              assign title_parts = display_title | split: '|'
-              assign title_top = title_parts[0]
-              assign title_bottom = title_parts[1]
-            elsif display_title == 'SCANDALICIOUS' or display_title == 'Scandalicious' or display_title == 'scandalicious'
-              assign is_scandalicious_split = true
-              assign title_top = 'SCAND'
-              assign title_bottom = 'alicious'
-            endif
-          %}
-
-          {% if is_scandalicious_split %}
-            <div class="editorial-split-title">
-              <div class="editorial-split-title__top">{{ title_top }}</div>
-              <div class="editorial-split-title__bottom-row">
-                <span class="editorial-split-title__prefix">a</span>
-                <span class="editorial-split-title__tall-l">l</span>
-                <span class="editorial-split-title__suffix">icious</span>
-              </div>
-            </div>
-          {% else %}
-            <h2 class="editorial-banner__title editorial-banner__title--main">
-              {{ display_title }}
-            </h2>
-          {% endif %}
+        {% if layout != 'style_3' or enable_custom_pos %}
+          {{ title_content }}
         {% endif %}
 
         <div class="editorial-banner__sub-container">
@@ -132,19 +183,35 @@
       </div>
 
       <!-- Secondary & Accent Media Column -->
-      <div class="editorial-banner__media-block editorial-banner__media-block--secondary">
-        {% if img_2 != blank %}
-          <div class="editorial-banner__image-wrapper editorial-banner__image-wrapper--img2">
-            {{ img_2 | image_url: width: 800 | image_tag: loading: 'lazy', class: 'editorial-banner__image', alt: display_title }}
-          </div>
-        {% endif %}
+      {% if show_img_2 or show_img_3 %}
+        <div class="editorial-banner__media-block editorial-banner__media-block--secondary">
+          {% if show_img_2 %}
+            {% if img_2 != blank or enable_custom_pos %}
+              <div class="editorial-banner__image-wrapper editorial-banner__image-wrapper--img2">
+                {% if img_2 != blank %}
+                  {{ img_2 | image_url: width: 800 | image_tag: loading: 'lazy', class: 'editorial-banner__image', alt: display_title }}
+                {% else %}
+                  {{ 'collection-2' | placeholder_svg_tag: 'editorial-banner__placeholder' }}
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endif %}
 
-        {% if img_3 != blank and layout != 'style_1' %}
-          <div class="editorial-banner__image-wrapper editorial-banner__image-wrapper--img3">
-            {{ img_3 | image_url: width: 800 | image_tag: loading: 'lazy', class: 'editorial-banner__image', alt: display_title }}
-          </div>
-        {% endif %}
-      </div>
+          {% if show_img_3 %}
+            {% if img_3 != blank or enable_custom_pos %}
+              {% if layout != 'style_1' or enable_custom_pos %}
+                <div class="editorial-banner__image-wrapper editorial-banner__image-wrapper--img3">
+                  {% if img_3 != blank %}
+                    {{ img_3 | image_url: width: 800 | image_tag: loading: 'lazy', class: 'editorial-banner__image', alt: display_title }}
+                  {% else %}
+                    {{ 'collection-3' | placeholder_svg_tag: 'editorial-banner__placeholder' }}
+                  {% endif %}
+                </div>
+              {% endif %}
+            {% endif %}
+          {% endif %}
+        </div>
+      {% endif %}
     </div>
   </div>
 </div>
@@ -166,7 +233,7 @@
   .editorial-banner__link-overlay {
     position: absolute;
     inset: 0;
-    z-index: 5;
+    z-index: 20;
   }
 
   .editorial-banner__grid {
@@ -176,6 +243,11 @@
   }
 
   /* Image styling & micro-animation */
+  .editorial-banner__image-wrapper {
+    position: relative;
+    overflow: hidden;
+  }
+
   .editorial-banner__image {
     width: 100%;
     height: 100%;
@@ -185,7 +257,7 @@
   }
 
   .editorial-banner__container:hover .editorial-banner__image {
-    transform: scale(1.02);
+    transform: scale(1.03);
   }
 
   .editorial-banner__placeholder {
@@ -194,88 +266,67 @@
     background: #f4f4f4;
   }
 
-  /* Typography */
+  /* Typography & Title Wrapper Positioning */
+  .editorial-banner__title-wrapper {
+    display: inline-block;
+    position: relative;
+    z-index: var(--title-z, 5);
+    transform: translate(var(--title-x, 0%), var(--title-y, 0px)) rotate(var(--title-rotate, 0deg));
+    transition: transform 0.3s ease;
+  }
+
   .editorial-banner__title {
     font-family: var(--font-heading--family, 'Gilda Display', serif);
+    font-size: var(--title-font-size, clamp(2.4rem, 5vw, 4.8rem));
     font-weight: 400;
     line-height: 0.95;
     margin: 0;
     color: #121212;
-    text-transform: uppercase;
+    text-transform: var(--title-text-transform, none);
     letter-spacing: -0.01em;
   }
 
   .editorial-banner__tagline {
     font-family: var(--font-body--family, sans-serif);
-    font-size: 0.8rem;
+    font-size: var(--tagline-font-size, 14px);
     font-weight: 700;
     letter-spacing: 0.14em;
-    text-transform: uppercase;
+    text-transform: var(--tagline-text-transform, uppercase);
     margin: 0;
-    color: #2b2b2b;
+    color: var(--tagline-color, #2b2b2b);
+    position: relative;
+    z-index: var(--tagline-z, 5);
+    transform: translate(var(--tagline-x, 0%), var(--tagline-y, 0px)) rotate(var(--tagline-rotate, 0deg));
+    transition: transform 0.3s ease;
   }
 
   .editorial-banner__divider {
-    width: 1px;
-    height: 50px;
-    background-color: #121212;
+    width: var(--divider-width, 1px);
+    height: var(--divider-height, 50px);
+    background-color: var(--divider-color, #121212);
     margin: 15px 0;
-  }
-
-  /* Split Title Typography (SCANDalicious style) */
-  .editorial-split-title {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: flex-start;
-    font-family: 'Agatho', var(--font-heading--family, 'Gilda Display', serif);
-    line-height: 1;
-    margin: 0 auto;
-    width: max-content;
     position: relative;
+    z-index: var(--divider-z, 5);
+    transform: translate(var(--divider-x, 0%), var(--divider-y, 0px)) rotate(var(--divider-rotate, 0deg));
+    transition: transform 0.3s ease;
   }
 
-  .editorial-split-title__top {
-    display: block;
-    font-size: clamp(3.2rem, 7vw, 5.8rem);
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: #121212;
-    line-height: 0.9;
-  }
-
-  .editorial-split-title__bottom-row {
-    display: inline-flex;
-    align-items: baseline;
-    white-space: nowrap;
-    margin-top: -6em;
-    margin-left: 88%;
-  }
-
-  .editorial-split-title__prefix {
-    font-size: clamp(2.4rem, 5.2vw, 4.4rem);
-    text-transform: lowercase;
-    color: #121212;
-    line-height: 1;
-  }
-
-  .editorial-split-title__tall-l {
-    font-size: clamp(4.8rem, 11vw, 11.5rem);
-    font-weight: 200;
-    line-height: 0.5;
-    color: #121212;
-    transform: translateY(-0em);
-    margin: 0 1px;
+  /* Graphic Title Options */
+  .editorial-banner__title-graphic {
     display: inline-block;
+    width: var(--title-graphic-width, 100%);
+    max-width: 100%;
+    margin: 0 auto;
   }
 
-  .editorial-split-title__suffix {
-    font-size: clamp(2.4rem, 5.2vw, 4.4rem);
-    text-transform: lowercase;
-    color: #121212;
-    line-height: 1;
+  .editorial-banner__title-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
   }
 
-  /* Layout 1: Scandalicious Style */
+  /* Standard Layout 1: Scandalicious Style */
   .editorial-banner__grid--style_1 {
     grid-template-columns: 1fr 1.2fr 0.8fr;
   }
@@ -286,7 +337,7 @@
   }
 
   .editorial-banner__grid--style_1 .editorial-banner__title--main {
-    font-size: clamp(3rem, 7vw, 6rem);
+    font-size: var(--title-font-size, clamp(3rem, 7vw, 6rem));
     text-align: center;
   }
 
@@ -307,7 +358,7 @@
     overflow: hidden;
   }
 
-  /* Layout 2: Ragebait Style */
+  /* Standard Layout 2: Ragebait Style */
   .editorial-banner__grid--style_2 {
     grid-template-columns: 1.1fr 1fr 0.9fr;
   }
@@ -318,9 +369,9 @@
   }
 
   .editorial-banner__grid--style_2 .editorial-banner__title--main {
-    font-size: clamp(2.8rem, 6.5vw, 5.5rem);
+    font-size: var(--title-font-size, clamp(2.8rem, 6.5vw, 5.5rem));
     text-align: center;
-    text-transform: lowercase;
+    text-transform: var(--title-text-transform, none);
   }
 
   .editorial-banner__grid--style_2 .editorial-banner__media-block--secondary {
@@ -347,7 +398,7 @@
     margin-top: 40px;
   }
 
-  /* Layout 3: In Scrutiny Style */
+  /* Standard Layout 3: In Scrutiny Style */
   .editorial-banner__top-header {
     margin-bottom: 25px;
     text-align: center;
@@ -358,7 +409,7 @@
   }
 
   .editorial-banner__grid--style_3 .editorial-banner__title--top {
-    font-size: clamp(3rem, 8vw, 7rem);
+    font-size: var(--title-font-size, clamp(3rem, 8vw, 7rem));
   }
 
   .editorial-banner__grid--style_3 .editorial-banner__media-block--primary {
@@ -381,24 +432,119 @@
     margin-left: auto;
   }
 
+  /* ==========================================================================
+     Custom Canvas (Free Placement & Overlapping Mode)
+     ========================================================================== */
+  .editorial-banner--custom-canvas .editorial-banner__container {
+    min-height: var(--canvas-min-height, 600px);
+  }
+
+  .editorial-banner--custom-canvas .editorial-banner__grid {
+    display: block !important;
+    position: relative !important;
+    min-height: var(--canvas-min-height, 600px) !important;
+    width: 100%;
+  }
+
+  .editorial-banner--custom-canvas .editorial-banner__media-block--primary,
+  .editorial-banner--custom-canvas .editorial-banner__media-block--secondary {
+    display: contents !important;
+  }
+
+  /* Image 1 Free Position */
+  .editorial-banner--custom-canvas .editorial-banner__image-wrapper--img1 {
+    position: absolute !important;
+    width: var(--img1-width, 35%) !important;
+    left: var(--img1-x, 0%) !important;
+    top: var(--img1-y, 0px) !important;
+    z-index: var(--img1-z, 2) !important;
+    transform: rotate(var(--img1-rotate, 0deg));
+    aspect-ratio: var(--img1-aspect, 3/4);
+    max-width: none !important;
+    margin: 0 !important;
+    pointer-events: auto;
+  }
+
+  /* Image 2 Free Position */
+  .editorial-banner--custom-canvas .editorial-banner__image-wrapper--img2 {
+    position: absolute !important;
+    width: var(--img2-width, 25%) !important;
+    left: var(--img2-x, 60%) !important;
+    top: var(--img2-y, 60px) !important;
+    z-index: var(--img2-z, 3) !important;
+    transform: rotate(var(--img2-rotate, 0deg));
+    aspect-ratio: var(--img2-aspect, 1/2);
+    max-width: none !important;
+    margin: 0 !important;
+    right: auto !important;
+    pointer-events: auto;
+  }
+
+  /* Image 3 Free Position */
+  .editorial-banner--custom-canvas .editorial-banner__image-wrapper--img3 {
+    position: absolute !important;
+    width: var(--img3-width, 20%) !important;
+    left: var(--img3-x, 74%) !important;
+    top: var(--img3-y, -40px) !important;
+    z-index: var(--img3-z, 1) !important;
+    transform: rotate(var(--img3-rotate, 0deg));
+    aspect-ratio: var(--img3-aspect, 1/1);
+    max-width: none !important;
+    margin: 0 !important;
+    right: auto !important;
+    pointer-events: auto;
+  }
+
+  /* Content Block Free Layering */
+  .editorial-banner--custom-canvas .editorial-banner__content-block {
+    position: relative !important;
+    z-index: var(--content-z, 5) !important;
+    transform: translate(var(--content-x, 0%), var(--content-y, 0px)) !important;
+    width: max-content;
+    max-width: 100%;
+    margin: 0 auto;
+    pointer-events: auto;
+  }
+
   /* Mobile Responsive Breakpoints */
   @media screen and (max-width: 749px) {
-    .editorial-banner__grid {
-      grid-template-columns: 1fr !important;
-      gap: 20px;
+    .editorial-banner--mob-stack .editorial-banner__grid {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 24px !important;
+      min-height: auto !important;
     }
 
-    .editorial-banner__title {
-      font-size: 2.8rem !important;
+    .editorial-banner--mob-stack .editorial-banner__media-block--primary,
+    .editorial-banner--mob-stack .editorial-banner__media-block--secondary {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 24px !important;
+    }
+
+    .editorial-banner--mob-stack .editorial-banner__image-wrapper--img1,
+    .editorial-banner--mob-stack .editorial-banner__image-wrapper--img2,
+    .editorial-banner--mob-stack .editorial-banner__image-wrapper--img3 {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      transform: none !important;
+      margin: 0 !important;
+      z-index: 1 !important;
+    }
+
+    .editorial-banner--mob-stack .editorial-banner__content-block {
+      position: relative !important;
+      transform: none !important;
+      width: 100% !important;
       text-align: center !important;
     }
 
-    .editorial-banner__media-block--primary,
-    .editorial-banner__image-wrapper--img2,
-    .editorial-banner__image-wrapper--img3 {
-      max-width: 100% !important;
-      width: 100% !important;
-      margin: 0 !important;
+    .editorial-banner__title {
+      font-size: var(--title-font-size, 2.8rem) !important;
+      text-align: center !important;
     }
 
     .editorial-banner__sub-container {
@@ -440,25 +586,292 @@
         {
           "value": "style_3",
           "label": "Style 3 (In Scrutiny - Top Header)"
+        },
+        {
+          "value": "custom",
+          "label": "Custom Canvas (Free Placement & Overlapping)"
         }
       ],
-      "default": "style_1"
+      "default": "custom"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_positions",
+      "label": "Enable Custom Positioning & Overlapping",
+      "info": "Check to freely adjust image position, rotation, width, and z-index layer stacking regardless of preset layout.",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "canvas_min_height",
+      "min": 300,
+      "max": 1000,
+      "step": 50,
+      "unit": "px",
+      "label": "Canvas minimum height",
+      "default": 600
     },
     {
       "type": "header",
-      "content": "Content Overrides"
+      "content": "Title & SVG Typography Settings"
+    },
+    {
+      "type": "select",
+      "id": "title_render_type",
+      "label": "Title Render Mode",
+      "options": [
+        { "value": "text", "label": "Standard Text Title" },
+        { "value": "svg_image", "label": "Uploaded SVG / Image Title Graphic" }
+      ],
+      "default": "text",
+      "info": "Choose how to display the title: standard text or uploaded SVG / image graphic."
     },
     {
       "type": "inline_richtext",
       "id": "title",
-      "label": "Title override",
+      "label": "Title override (Text)",
       "info": "Leave blank to pull from Collection Title."
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "min": 20,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "label": "Title Text Font Size",
+      "default": 56
+    },
+    {
+      "type": "select",
+      "id": "title_text_transform",
+      "label": "Title Text Case",
+      "options": [
+        { "value": "none", "label": "As Typed (Original Case)" },
+        { "value": "uppercase", "label": "UPPERCASE" },
+        { "value": "lowercase", "label": "lowercase" },
+        { "value": "capitalize", "label": "Capitalize Each Word" }
+      ],
+      "default": "none",
+      "info": "Control letter casing for standard text titles."
+    },
+    {
+      "type": "image_picker",
+      "id": "title_image",
+      "label": "Title SVG / Image Graphic",
+      "info": "Upload custom SVG or image logo. Used when Render Mode is set to Uploaded SVG / Image Title Graphic."
+    },
+    {
+      "type": "text",
+      "id": "title_image_alt",
+      "label": "Title Graphic Alt Text (SEO & Accessibility)",
+      "info": "Accessible text describing the SVG/Image title for screen readers and SEO. Defaults to collection title if blank."
+    },
+    {
+      "type": "range",
+      "id": "title_graphic_width",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Uploaded SVG / Graphic Image Width (%)",
+      "default": 100,
+      "info": "Control uploaded SVG graphic width as a percentage of container width for responsive scaling."
+    },
+    {
+      "type": "header",
+      "content": "Title Positioning & Placement"
+    },
+    {
+      "type": "range",
+      "id": "title_pos_x",
+      "min": -100,
+      "max": 100,
+      "step": 2,
+      "unit": "%",
+      "label": "Title Horizontal Offset (X Offset)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "title_pos_y",
+      "min": -300,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "label": "Title Vertical Offset (Y Offset)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "title_rotation",
+      "min": -45,
+      "max": 45,
+      "step": 1,
+      "unit": "deg",
+      "label": "Title Rotation Angle",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "title_z_index",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Title Stacking Depth (Z-Index)",
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Subtitle / Tagline Customization & Placement"
     },
     {
       "type": "inline_richtext",
       "id": "tagline",
       "label": "Tagline / Subtext override",
       "info": "Leave blank to pull from Collection Metafield / Description."
+    },
+    {
+      "type": "range",
+      "id": "tagline_font_size",
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "Tagline Font Size",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "tagline_text_transform",
+      "label": "Tagline Text Case",
+      "options": [
+        { "value": "uppercase", "label": "UPPERCASE" },
+        { "value": "none", "label": "As Typed (Original)" },
+        { "value": "lowercase", "label": "lowercase" },
+        { "value": "capitalize", "label": "Capitalize Each Word" }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "color",
+      "id": "tagline_color",
+      "label": "Tagline Color",
+      "default": "#2b2b2b"
+    },
+    {
+      "type": "range",
+      "id": "tagline_pos_x",
+      "min": -100,
+      "max": 100,
+      "step": 2,
+      "unit": "%",
+      "label": "Tagline Horizontal Offset (X Offset)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "tagline_pos_y",
+      "min": -300,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "label": "Tagline Vertical Offset (Y Offset)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "tagline_rotation",
+      "min": -45,
+      "max": 45,
+      "step": 1,
+      "unit": "deg",
+      "label": "Tagline Rotation Angle",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "tagline_z_index",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Tagline Stacking Depth (Z-Index)",
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Divider Customization & Placement"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_divider",
+      "label": "Show Divider Line",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider Line Color",
+      "default": "#121212"
+    },
+    {
+      "type": "range",
+      "id": "divider_width",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Divider Line Thickness / Width",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "divider_height",
+      "min": 10,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "label": "Divider Line Height / Length",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "divider_pos_x",
+      "min": -100,
+      "max": 100,
+      "step": 2,
+      "unit": "%",
+      "label": "Divider Horizontal Offset (X Offset)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "divider_pos_y",
+      "min": -300,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "label": "Divider Vertical Offset (Y Offset)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "divider_rotation",
+      "min": -90,
+      "max": 90,
+      "step": 5,
+      "unit": "deg",
+      "label": "Divider Rotation Angle",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "divider_z_index",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Divider Stacking Depth (Z-Index)",
+      "default": 5
     },
     {
       "type": "url",
@@ -490,13 +903,278 @@
     },
     {
       "type": "header",
-      "content": "Layout Details"
+      "content": "Image 1 (Primary) Placement & Overlapping"
     },
     {
       "type": "checkbox",
-      "id": "show_divider",
-      "label": "Show vertical divider line",
+      "id": "show_image_1",
+      "label": "Show Image 1 (Primary)",
       "default": true
+    },
+    {
+      "type": "range",
+      "id": "image_1_width",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Image 1 Width",
+      "default": 35
+    },
+    {
+      "type": "range",
+      "id": "image_1_pos_x",
+      "min": -20,
+      "max": 100,
+      "step": 2,
+      "unit": "%",
+      "label": "Image 1 Horizontal Position (X Offset)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "image_1_pos_y",
+      "min": -300,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "label": "Image 1 Vertical Position (Y Offset)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "image_1_z_index",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Image 1 Stacking Depth (Z-Index)",
+      "info": "Higher values bring the image to the front, lower values send it behind.",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "image_1_rotation",
+      "min": -45,
+      "max": 45,
+      "step": 1,
+      "unit": "deg",
+      "label": "Image 1 Rotation Angle",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "image_1_aspect_ratio",
+      "label": "Image 1 Aspect Ratio",
+      "options": [
+        { "value": "auto", "label": "Auto / Original" },
+        { "value": "1/1", "label": "1:1 Square" },
+        { "value": "3/4", "label": "3:4 Portrait" },
+        { "value": "4/5", "label": "4:5 Portrait" },
+        { "value": "9/16", "label": "9:16 Tall" },
+        { "value": "16/9", "label": "16:9 Wide" },
+        { "value": "1/2", "label": "1:2 Ultra Tall" }
+      ],
+      "default": "3/4"
+    },
+    {
+      "type": "header",
+      "content": "Image 2 (Secondary) Placement & Overlapping"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image_2",
+      "label": "Show Image 2 (Secondary)",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "image_2_width",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Image 2 Width",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "image_2_pos_x",
+      "min": -20,
+      "max": 100,
+      "step": 2,
+      "unit": "%",
+      "label": "Image 2 Horizontal Position (X Offset)",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "image_2_pos_y",
+      "min": -300,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "label": "Image 2 Vertical Position (Y Offset)",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "image_2_z_index",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Image 2 Stacking Depth (Z-Index)",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "image_2_rotation",
+      "min": -45,
+      "max": 45,
+      "step": 1,
+      "unit": "deg",
+      "label": "Image 2 Rotation Angle",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "image_2_aspect_ratio",
+      "label": "Image 2 Aspect Ratio",
+      "options": [
+        { "value": "auto", "label": "Auto / Original" },
+        { "value": "1/1", "label": "1:1 Square" },
+        { "value": "3/4", "label": "3:4 Portrait" },
+        { "value": "4/5", "label": "4:5 Portrait" },
+        { "value": "9/16", "label": "9:16 Tall" },
+        { "value": "16/9", "label": "16:9 Wide" },
+        { "value": "1/2", "label": "1:2 Ultra Tall" }
+      ],
+      "default": "1/2"
+    },
+    {
+      "type": "header",
+      "content": "Image 3 (Accent) Placement & Overlapping"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image_3",
+      "label": "Show Image 3 (Accent)",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "image_3_width",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Image 3 Width",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "image_3_pos_x",
+      "min": -20,
+      "max": 100,
+      "step": 2,
+      "unit": "%",
+      "label": "Image 3 Horizontal Position (X Offset)",
+      "default": 74
+    },
+    {
+      "type": "range",
+      "id": "image_3_pos_y",
+      "min": -300,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "label": "Image 3 Vertical Position (Y Offset)",
+      "default": -40
+    },
+    {
+      "type": "range",
+      "id": "image_3_z_index",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Image 3 Stacking Depth (Z-Index)",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "image_3_rotation",
+      "min": -45,
+      "max": 45,
+      "step": 1,
+      "unit": "deg",
+      "label": "Image 3 Rotation Angle",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "image_3_aspect_ratio",
+      "label": "Image 3 Aspect Ratio",
+      "options": [
+        { "value": "auto", "label": "Auto / Original" },
+        { "value": "1/1", "label": "1:1 Square" },
+        { "value": "3/4", "label": "3:4 Portrait" },
+        { "value": "4/5", "label": "4:5 Portrait" },
+        { "value": "9/16", "label": "9:16 Tall" },
+        { "value": "16/9", "label": "16:9 Wide" },
+        { "value": "1/2", "label": "1:2 Ultra Tall" }
+      ],
+      "default": "1/1"
+    },
+    {
+      "type": "header",
+      "content": "Content Block Custom Layering"
+    },
+    {
+      "type": "range",
+      "id": "content_pos_x",
+      "min": -50,
+      "max": 50,
+      "step": 2,
+      "unit": "%",
+      "label": "Content Horizontal Offset (X Offset)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "content_pos_y",
+      "min": -200,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "Content Vertical Offset (Y Offset)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "content_z_index",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "label": "Content Stacking Depth (Z-Index)",
+      "info": "Control whether text sits on top of or behind overlapping images.",
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Mobile Settings"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile Layout Behavior",
+      "options": [
+        { "value": "stack", "label": "Stack Vertically (Clean & Responsive)" },
+        { "value": "custom_overlap", "label": "Preserve Custom Overlap & Placement" }
+      ],
+      "default": "stack"
+    },
+    {
+      "type": "header",
+      "content": "Layout Details"
     },
     {
       "type": "color",
@@ -537,3 +1215,4 @@
   ]
 }
 {% endschema %}
+
